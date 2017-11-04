@@ -6,8 +6,6 @@
 
 <script>
 
-base_scores = [3,3,3,3,4,4,4,4,5,5,5,5,6,6,6];
-
 function createProblem() {
     var problem = new Object();
     problem.status = 'none'; // none, first, second, third
@@ -74,7 +72,42 @@ function testTeam() {
     );
 }
 
-//var teams=[]
+// globals
+var base_scores = [3,3,3,3,4,4,4,4,5,5,5,5,6,6,6];
+var teams=[];
+
+// checks in whole string
+function smartSearchTeam(teams, ss) {
+    var num_teams = len(teams);
+    var candidates = [];
+    for (var i = 0; i < num_teams; i++) {
+        var team = teams[i];
+        var r = team.indexOf(ss);
+        if (r != -1) {
+            candidates.push(team);
+        }
+    }
+    return candidates;
+}
+
+// checks in prefix only
+function searchTeam(teams, ss) {
+    var num_teams = len(teams);
+    var candidates = [];
+    for (var i = 0; i < num_teams; i++) {
+        var team = teams[i];
+        var r = team.indexOf(ss);
+        if (r == 0) {
+            candidates.push(team);
+        }
+    }
+    return candidates;
+}
+
+function loadTeams() {
+    teams = []; // no var!
+    //teams = ...;
+}
 
 testTeam();
 // script
