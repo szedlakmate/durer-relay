@@ -6,7 +6,7 @@
 
 <script>
 
-base_scores[] = [3,3,3,3,4,4,4,4,5,5,5,5,6,6,6];
+var base_scores[] = [3,3,3,3,4,4,4,4,5,5,5,5,6,6,6];
 
 function createProblem() {
     var problem = new Object();
@@ -62,7 +62,7 @@ function createTeam(name, id=null, num_problems=15) {
     }
     return team;
 }
-        
+
 function testTeam() {
     var team = createTeam("Szprájt");
     team.getProblem(1).setStatus('first');
