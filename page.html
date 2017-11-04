@@ -6,6 +6,7 @@
 
 <script>
 
+base_scores[] = [3,3,3,3,4,4,4,4,5,5,5,5,6,6,6];
 
 function createProblem() {
     var problem = new Object();
@@ -42,9 +43,8 @@ function createProblem() {
 function createTeam(name, id=null, num_problems=15) {
     team = new Object();
     var problems = [null]; // 0. feladatot nullal feltöltöm
-    for (var i = 1; i <= num_problems; i++) {
+    for (var i = 1; i <= num_problems; i++)
         problems.push(createProblem());
-    }
     team.problems = problems;
     team.name = name;
     team.id = id;
