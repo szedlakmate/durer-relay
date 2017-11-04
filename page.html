@@ -6,6 +6,7 @@
 
 <script>
 
+// Problem objektum készítése
 function createProblem() {
     var problem = new Object();
     problem.status = 'none'; // none, first, second, third
@@ -36,6 +37,7 @@ function createProblem() {
     return problem;
 }
 
+// Team objektum készítése
 // name: csapatnév
 // id: csapatid
 function createTeam(name, id=null, num_problems=15) {
@@ -44,7 +46,7 @@ function createTeam(name, id=null, num_problems=15) {
     for (var i = 1; i <= num_problems; i++)
         problems.push(createProblem());
     team.problems = problems;
-    team.name = name;
+    team.teamname = name; // !! nem name, mert azt használhatják kívülről
     team.id = id;
     team.getScore = function(num_problems, base_scores) {
         var sum = 0;
@@ -60,7 +62,8 @@ function createTeam(name, id=null, num_problems=15) {
     }
     return team;
 }
-        
+
+// egyszerű teszt Team-re és Problem-re: createTeam, getProblem, problem.setStatus, getScore
 function testTeam() {
     var team = createTeam("Szprájt");
     team.getProblem(1).setStatus('first');
@@ -72,11 +75,11 @@ function testTeam() {
     );
 }
 
-// globals
+// globális változók
 var base_scores = [3,3,3,3,4,4,4,4,5,5,5,5,6,6,6];
 var teams=[];
 
-// checks in whole string
+// substring-et keres, nem csak a csapatnév elején
 function smartSearchTeam(substr) {
     var num_teams = len(teams);
     var candidates = [];
@@ -90,7 +93,7 @@ function smartSearchTeam(substr) {
     return candidates;
 }
 
-// checks in prefix only
+// substring-et keres, de csak a csapatnév elején
 function searchTeam(substr) {
     var num_teams = len(teams);
     var candidates = [];
@@ -105,12 +108,41 @@ function searchTeam(substr) {
 }
 
 function loadTeams() {
-    teams = []; // no var!
+    teams = []; // ne írj var-t!
     //teams = ...;
 }
 
+function dataOK() {
+/*    var teamname = ...;
+    var choice = ...;*/
+}
+
 testTeam();
-// script
+
+// clears all DOM options in DOM select
+function clearOptions() {
+    // TODO
+}
+
+// add DOM option to DOM select
+function addOption(value    ) {
+    // TODO
+}
+
+// ha beírok valamit a felső input-ba, akkor a lehetőségek frissülnek az alapján.
+function updateOptions() {
+    var filtered = smartSearchTeam(teams);
+    var length = len(filtered);
+    clearOptions();
+    for (var i = 0; i < length; i++) {
+        createOption(filtered[i].teamname);
+    }
+}
+// event callbacks
+$("filter").change(function() {
+    console.log("Change");
+    updateOptions();
+});
 
 </script>
 
@@ -118,7 +150,11 @@ testTeam();
 
 <!-- Html part -->
 
-<select id="teamNames"></select>
+<!-- kiszűri azokat a csapatokat, amiknek nincs a nevében az adott szöveg -->
+<input type="text" name="filter" onEdit=""></input>
+<!-- Itt jelennek meg a megszűrt nevek -->
+<select id="teamNames" size="10">
+</select>
 
 <input type="radio" name="choice" value="first"> 1. Próba
 
