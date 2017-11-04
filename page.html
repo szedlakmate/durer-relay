@@ -87,13 +87,31 @@ teams.push(createTeam("My"));
 teams.push(createTeam("Old"));
 teams.push(createTeam("Friend"));
 
+// kereséshez segédfüggvény:
+// kiveszi az ékezeteket, szóközöket és case insensitive-vé teszi
+function mystrip(r, strip_accents=true, strip_spaces=true) {
+    var r=r.toLowerCase();
+    if (strip_spaces) {
+        r = r.replace(new RegExp(/\s/g),"");
+    }
+    if (strip_accents) { // https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript
+        r = r.replace(new RegExp(/[á]/g),"a");
+        r = r.replace(new RegExp(/[é]/g),"e");
+        r = r.replace(new RegExp(/[í]/g),"i");
+        r = r.replace(new RegExp(/[óöő]/g),"o");
+        r = r.replace(new RegExp(/[úüű]/g),"u");
+    }
+    return r;
+}
+
 // substring-et keres, nem csak a csapatnév elején
-function smartSearchTeam(substr) { // TODO: lowercase
+function smartSearchTeam(substr) {
+    substr = mystrip(substr);
     var num_teams = teams.length;
     var candidates = [];
     for (var i = 0; i < num_teams; i++) {
         var team = teams[i];
-        var r = team.teamname.indexOf(substr);
+        var r = mystrip(team.teamname).indexOf(substr);
         if (r != -1) {
             candidates.push(team);
         }
@@ -101,13 +119,14 @@ function smartSearchTeam(substr) { // TODO: lowercase
     return candidates;
 }
 
-// substring-et keres, de csak a csapatnév elején
-function searchTeam(substr) { // TODO: lowercase
+// substring-et keres, de csak a csapatnév elején, valszeg nem fog kelleni
+function searchTeam(substr) {
+    substr = mystrip(substr);
     var num_teams = len(teams);
     var candidates = [];
     for (var i = 0; i < num_teams; i++) {
         var team = teams[i];
-        var r = team.indexOf(substr);
+        var r = mystrip(team.teamname).indexOf(substr);
         if (r == 0) {
             candidates.push(team);
         }
@@ -121,8 +140,9 @@ function loadTeams() {
 }
 
 function dataOK() {
-/*    var teamname = ...;
-    var choice = ...;*/
+    var teamname = $('#teamNames option:selected').val();
+    var choice = $("input[name='choice']:checked").val();
+    // TODO
 }
 
 testTeam();
@@ -130,7 +150,6 @@ testTeam();
 // clears all DOM options in DOM select
 function clearOptions() {
     $("#teamNames").empty();
-    // TODO
 }
 
 // add DOM option to DOM select
@@ -139,24 +158,22 @@ function addOption(value) {
         value: value,
         text: value
     }));
-    // TODO
 }
 
 // ha beírok valamit a felső input-ba, akkor a lehetőségek frissülnek az alapján.
 function updateOptions() {
-    var filtered = smartSearchTeam($("#filter").val());
+    var substr = $("#filter").val();
+    var filtered = smartSearchTeam(substr);
     var length = filtered.length;
     clearOptions();
     for (var i = 0; i < length; i++) {
-        console.log(filtered[i].teamname);
         addOption(filtered[i].teamname);
     }
 }
 
 // event callbacks
 $(document).ready(function(){
-    $("#filter").change(function() {
-        console.log("Change");
+    $("#filter").on('input', function() {
         updateOptions();
     });
     updateOptions();
@@ -171,7 +188,7 @@ $(document).ready(function(){
 <!-- Html part -->
 
 <!-- kiszűri azokat a csapatokat, amiknek nincs a nevében az adott szöveg -->
-Szűrő: (nyomj entert, TODO) <input type="text" id="filter"><br>
+<input type="text" id="filter"><br>
 <!-- Itt jelennek meg a megszűrt nevek -->
 <select id="teamNames" size="10">
 </select><br>
