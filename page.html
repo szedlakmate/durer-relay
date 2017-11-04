@@ -6,6 +6,59 @@
 
 <script>
 
+
+function createProblem() {
+  var problem = new Object();
+  problem.status = 'none'; // none, first, second, third
+  problem.getScore = function(base_score) {
+    switch (this.status) {
+      case 'none': return 0;
+      case 'first': return base_score;
+      case 'second': return base_score-1;
+      case 'third': return base_score-2;
+      default: 
+        console.log('Invalid problem state');
+        // itt kéne egy rohadtnagy error
+    }
+  };
+  problem.setStatus = function(new_status) {
+    switch (this.status) {
+      case 'none':
+      case 'first':
+      case 'second':
+      case 'third':
+        break;
+      default:
+        console.log('Invalid problem state. Valid states are none, first, second, third');
+        // itt kéne egy rohadtnagy error
+    }
+    this.status = new_status;
+  };
+  return problem;
+}
+
+// name: csapatnév
+// id: csapatid
+function createTeam(name, id=Null, num_problems=15) {
+  team = new Object();
+  var problems = [];
+  for (int i = 0; i < num_problems; i++) {
+    problems.concat(createProblem());
+  }
+  team.problems = problems;
+  team.name = name;
+  team.id = id;
+  team.getScore = function(num_problems, base_scores) {
+      var sum = 0;
+      for (int i = 0; i < num_problems; i++)
+        sum += this.problems[i].getScore(base_scores[i]);
+      return sum;
+  };
+}
+
+teams=[]
+
+
 // script
 
 </script>
