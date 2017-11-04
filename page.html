@@ -77,12 +77,12 @@ var base_scores = [3,3,3,3,4,4,4,4,5,5,5,5,6,6,6];
 var teams=[];
 
 // checks in whole string
-function smartSearchTeam(teams, ss) {
+function smartSearchTeam(substr) {
     var num_teams = len(teams);
     var candidates = [];
     for (var i = 0; i < num_teams; i++) {
         var team = teams[i];
-        var r = team.indexOf(ss);
+        var r = team.indexOf(substr);
         if (r != -1) {
             candidates.push(team);
         }
@@ -91,12 +91,12 @@ function smartSearchTeam(teams, ss) {
 }
 
 // checks in prefix only
-function searchTeam(teams, ss) {
+function searchTeam(substr) {
     var num_teams = len(teams);
     var candidates = [];
     for (var i = 0; i < num_teams; i++) {
         var team = teams[i];
-        var r = team.indexOf(ss);
+        var r = team.indexOf(substr);
         if (r == 0) {
             candidates.push(team);
         }
