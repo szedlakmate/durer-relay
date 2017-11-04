@@ -80,14 +80,20 @@ function testTeam() {
 // globális változók
 var base_scores = [3,3,3,3,4,4,4,4,5,5,5,5,6,6,6];
 var teams=[];
+// teszt, törölj ki
+teams.push(createTeam("Hello"));
+teams.push(createTeam("Darkness"));
+teams.push(createTeam("My"));
+teams.push(createTeam("Old"));
+teams.push(createTeam("Friend"));
 
 // substring-et keres, nem csak a csapatnév elején
-function smartSearchTeam(substr) {
-    var num_teams = len(teams);
+function smartSearchTeam(substr) { // TODO: lowercase
+    var num_teams = teams.length;
     var candidates = [];
     for (var i = 0; i < num_teams; i++) {
         var team = teams[i];
-        var r = team.indexOf(substr);
+        var r = team.teamname.indexOf(substr);
         if (r != -1) {
             candidates.push(team);
         }
@@ -96,7 +102,7 @@ function smartSearchTeam(substr) {
 }
 
 // substring-et keres, de csak a csapatnév elején
-function searchTeam(substr) {
+function searchTeam(substr) { // TODO: lowercase
     var num_teams = len(teams);
     var candidates = [];
     for (var i = 0; i < num_teams; i++) {
@@ -123,26 +129,36 @@ testTeam();
 
 // clears all DOM options in DOM select
 function clearOptions() {
+    $("#teamNames").empty();
     // TODO
 }
 
 // add DOM option to DOM select
-function addOption(value    ) {
+function addOption(value) {
+    $("#teamNames").append($('<option>', {
+        value: value,
+        text: value
+    }));
     // TODO
 }
 
 // ha beírok valamit a felső input-ba, akkor a lehetőségek frissülnek az alapján.
 function updateOptions() {
-    var filtered = smartSearchTeam(teams);
-    var length = len(filtered);
+    var filtered = smartSearchTeam($("#filter").val());
+    var length = filtered.length;
     clearOptions();
     for (var i = 0; i < length; i++) {
-        createOption(filtered[i].teamname);
+        console.log(filtered[i].teamname);
+        addOption(filtered[i].teamname);
     }
 }
+
 // event callbacks
-$("filter").change(function() {
-    console.log("Change");
+$(document).ready(function(){
+    $("#filter").change(function() {
+        console.log("Change");
+        updateOptions();
+    });
     updateOptions();
 });
 
@@ -155,7 +171,7 @@ $("filter").change(function() {
 <!-- Html part -->
 
 <!-- kiszűri azokat a csapatokat, amiknek nincs a nevében az adott szöveg -->
-<input type="text" name="filter"><br>
+Szűrő: (nyomj entert, TODO) <input type="text" id="filter"><br>
 <!-- Itt jelennek meg a megszűrt nevek -->
 <select id="teamNames" size="10">
 </select><br>
@@ -170,6 +186,8 @@ $("filter").change(function() {
 
 <input type="button" onclick="dataOK()" value="OKÉ" >
 
+<script>
+</script>
 </body>
 
 </html>
