@@ -30,7 +30,7 @@ function createProblem() {
             case 'third':
                 break;
             default:
-                console.log('Invalid problem state. Valid states are none, first, second, third');
+           console.log('Invalid problem state. Valid states are none, first, second, third');
                 // itt kéne egy rohadtnagy error
         }
         this.status = new_status;
@@ -60,7 +60,7 @@ function createTeam(name, id=null, num_problems=15) {
             console.log('ERROR!');
         }
         return this.problems[i];
-    }
+   }
     return team;
 }
 
@@ -80,7 +80,7 @@ function testTeam() {
 var base_scores = [3,3,3,3,4,4,4,4,5,5,5,5,6,6,6];
 var teams=[];
 
-// substring-et keres, nem csak a csapatnév elején
+d// substring-et keres, nem csak a csapatnév elején
 function smartSearchTeam(substr) {
     var num_teams = len(teams);
     var candidates = [];
@@ -88,7 +88,7 @@ function smartSearchTeam(substr) {
         var team = teams[i];
         var r = team.indexOf(substr);
         if (r != -1) {
-            candidates.push(team);
+           candidates.push(team);
         }
     }
     return candidates;
@@ -98,9 +98,9 @@ function smartSearchTeam(substr) {
 function searchTeam(substr) {
     var num_teams = len(teams);
     var candidates = [];
-    for (var i = 0; i < num_teams; i++) {
+   for (var i = 0; i < num_teams; i++) {
         var team = teams[i];
-        var r = team.indexOf(substr);
+       var r = team.indexOf(substr);
         if (r == 0) {
             candidates.push(team);
         }
@@ -154,10 +154,11 @@ $("filter").change(function() {
 <!-- Html part -->
 
 <!-- kiszűri azokat a csapatokat, amiknek nincs a nevében az adott szöveg -->
-<input type="text" name="filter"><br>
+<input type="text" name="filter"><br> //nem a legjobb megoldás, szerintem nem jó ötlet ha két bemenet van
 <!-- Itt jelennek meg a megszűrt nevek -->
-<select id="teamNames" size="10">
+<select id="teamNames" size="10"> //nem a legjobb megoldás
 </select><br>
+    //helyette inkább legyen <input type="list", és hozzá datalist option ok
 
 <input type="radio" name="choice" value="first"> 1. Próba<br>
 
