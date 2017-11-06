@@ -180,7 +180,7 @@ function updateOptions() {
     var length = filtered.length;
     clearOptions();
     for (var i = 0; i < length; i++)
-        addOption(filtered[i].teamname + ' (' + filtered[i].getScore(15, base_scores) + ')', filtered[i].teamname);
+        addOption((i+1) + ': ' + filtered[i].teamname + ' (' + filtered[i].getScore(15, base_scores) + ')', filtered[i].teamname);
     // Nem mukodik, ha ] van a csapatnevben!!
     selected = $('#teamNames').val(selected);
 }
@@ -191,13 +191,23 @@ $(document).ready(function(){
         updateOptions();
     });
     updateOptions();
+    
+    $("body").get()[0].addEventListener('keydown', function() {
+        if (event.keyCode == 27) { // escape
+            event.stopPropagation();
+            $("#filter").val('');
+            updateOptions();
+            $("#filter").focus();
+            // Call event.preventDefault() to not process the event
+            event.preventDefault();
+        }
+    });
 
     $("#filter").get()[0].addEventListener('keydown', function (event) {
-        if (event.keyCode == 27) {
+        if (event.keyCode == 13) {
             event.stopPropagation();
             $("#teamNames").focus();
-            // Call event.preventDefault() to stop the character before the cursor
-            // from being deleted. Remove this line if you don't want to do that.
+            // Call event.preventDefault() to not process the event
             event.preventDefault();
         }
     });
@@ -205,7 +215,52 @@ $(document).ready(function(){
         if (event.keyCode >= 48 && event.keyCode < 58) {
             $('#teamNames').val($("#teamNames option")[event.keyCode-48-1].value);
         } else if (event.keyCode == 13) {
-//            $('#teamNames')
+            // nem megy fel a body-ba a keres
+            event.stopPropagation();
+            $("#radio_0").focus();
+            // Call event.preventDefault() to not process the event
+            event.preventDefault();
+        }
+    });
+    $.each($("input[name='choice']"), function(_, radio) {
+            radio.addEventListener('keydown',
+            function (event) {
+        console.log('a');
+        var map = ['none', 'first', 'second', 'third'];
+        if (event.keyCode >= 48 && event.keyCode < 58) {
+            checked = $("input[name='choice']:checked");
+            if (checked) checked.prop('checked', false); // uncheck
+            var name = map[event.keyCode-48];
+            tocheck = $("input[name='choice']" +
+              "[value='"+name+"']");
+            if (!tocheck)
+                console.log("whoops");
+            tocheck.prop('checked', true); // check
+        } if (event.keyCode == 13) {
+            // nem megy fel a body-ba a keres
+            event.stopPropagation();
+            $("#problem").focus();
+            // Call event.preventDefault() to not process the event
+            event.preventDefault();
+        }
+    })});
+    $("#problem").get()[0].addEventListener('keydown', function(event) {
+        if (event.keyCode == 13) {
+            // nem megy fel a body-ba a keres
+            event.stopPropagation();
+            $("#ok").focus();
+            // Call event.preventDefault() to not process the event
+            event.preventDefault();
+        }
+    });
+    $("#ok").get()[0].addEventListener('keydown', function(event) {
+        if (event.keyCode == 13) {
+            // nem megy fel a body-ba a keres
+            event.stopPropagation();
+            $(this).click();
+            $("#filter").focus();
+            // Call event.preventDefault() to not process the event
+            event.preventDefault();
         }
     });
 
@@ -224,9 +279,9 @@ $(document).ready(function(){
 <!-- Itt jelennek meg a megszűrt nevek -->
 <select id="teamNames" size="10"> //nem a legjobb megoldás
 </select><br>
-    //helyette inkább legyen <input type="list", és hozzá datalist option ok
+<!--helyette inkább legyen <input type="list", és hozzá datalist option ok -->
 
-<input type="radio" name="choice" value="first"> 1. Próba<br>
+<input id="radio_0" type="radio" name="choice" value="first"> 1. Próba<br>
 
 <input type="radio" name="choice" value="second"> 2. Próba<br>
 
@@ -234,9 +289,9 @@ $(document).ready(function(){
 
 <input type="radio" name="choice" value="none"> Passz<br>
 
-<input type="button" onclick="dataOK()" value="OKÉ" >
-
 <input type="number" id="problem" value="1" min="1" max="15">
+
+<input type="button" id="ok" onclick="dataOK()" value="OKÉ" >
 
 <script>
 </script>
