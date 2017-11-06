@@ -60,7 +60,7 @@ function createTeam(name, id=null, num_problems=15) {
         if (i < 1 || i > 15)
             console.log('ERROR!');
         return this.problems[i];
-    }
+   }
     return team;
 }
 
@@ -196,7 +196,6 @@ $(document).ready(function(){
         if (event.keyCode == 27) {
             event.stopPropagation();
             $("#teamNames").focus();
-        
             // Call event.preventDefault() to stop the character before the cursor
             // from being deleted. Remove this line if you don't want to do that.
             event.preventDefault();
@@ -206,7 +205,7 @@ $(document).ready(function(){
         if (event.keyCode >= 48 && event.keyCode < 58) {
             $('#teamNames').val($("#teamNames option")[event.keyCode-48-1].value);
         } else if (event.keyCode == 13) {
-            $('#teamNames')
+//            $('#teamNames')
         }
     });
 
@@ -223,8 +222,9 @@ $(document).ready(function(){
 <!-- kiszűri azokat a csapatokat, amiknek nincs a nevében az adott szöveg -->
 <input type="text" id="filter"><br>
 <!-- Itt jelennek meg a megszűrt nevek -->
-<select id="teamNames" size="10">
+<select id="teamNames" size="10"> //nem a legjobb megoldás
 </select><br>
+    //helyette inkább legyen <input type="list", és hozzá datalist option ok
 
 <input type="radio" name="choice" value="first"> 1. Próba<br>
 
