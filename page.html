@@ -181,10 +181,43 @@ function updateOptions() {
     clearOptions();
     for (var i = 0; i < length; i++)
         addOption((i+1) + ': ' + filtered[i].teamname + ' (' + filtered[i].getScore(15, base_scores) + ')', filtered[i].teamname);
-    // Nem mukodik, ha ] van a csapatnevben!!
-    selected = $('#teamNames').val(selected);
+    // ha ki tudjuk ujra valasztani azt, ami a frissites elott volt
+    if ($("#teamNames option[value='"+selected+"']").length) {
+        $('#teamNames').val(selected);
+    } else {
+        // egyebkent az elsot, ha van, kivalasztjuk
+        firstOption = $("#teamNames option:first");
+        if (firstOption.length) {
+            $("#teamNames").val(firstOption.val());
+        }
+    }
+}
+    
+function uncheckRadio() {
+    checked = $("input[name='choice']:checked");
+    if (checked) checked.prop('checked', false); // uncheck
 }
 
+function checkRadio(num) {
+    var map = ['none', 'first', 'second', 'third'];
+    var name = map[num];
+    tocheck = $("input[name='choice']" +
+      "[value='"+name+"']");
+    if (!tocheck)
+        console.log("whoops");
+    tocheck.prop('checked', true); // check
+}
+
+function clearData() {
+    $("#filter").val('');
+    $("#teamNames").val('');
+    updateOptions();
+    $("#problem").val(1);
+    uncheckRadio();
+    checkRadio(0);
+    $("#filter").focus();
+}
+    
 // event callbacks
 $(document).ready(function(){
     $("#filter").on('input', function() {
@@ -192,17 +225,18 @@ $(document).ready(function(){
     });
     updateOptions();
     
+    // hot-keyek
+    // ha barhol escape-t nyomnak, akkor torli az adatokat
     $("body").get()[0].addEventListener('keydown', function() {
         if (event.keyCode == 27) { // escape
             event.stopPropagation();
-            $("#filter").val('');
-            updateOptions();
-            $("#filter").focus();
+            clearData();
             // Call event.preventDefault() to not process the event
             event.preventDefault();
         }
     });
 
+    // enterre (meg tabra, de az built-in) tovabbmegy a kovetkezo elemre
     $("#filter").get()[0].addEventListener('keydown', function (event) {
         if (event.keyCode == 13) {
             event.stopPropagation();
@@ -211,6 +245,8 @@ $(document).ready(function(){
             event.preventDefault();
         }
     });
+    // enterre (meg tabra, de az built-in) tovabbmegy a kovetkezo elemre
+    // barmilyen (egyjegyu) szamra pedig kivalasztja az annyiadik elemet
     $("#teamNames").get()[0].addEventListener('keydown', function(event) {
         if (event.keyCode >= 48 && event.keyCode < 58) {
             $('#teamNames').val($("#teamNames option")[event.keyCode-48-1].value);
@@ -222,28 +258,25 @@ $(document).ready(function(){
             event.preventDefault();
         }
     });
+    // a radiogombokon pedig a 0123-ra reagal (kivalasztja a megfelelot)
+    // enter, tab tovabbmegy (lasd fentebb)
     $.each($("input[name='choice']"), function(_, radio) {
             radio.addEventListener('keydown',
             function (event) {
         console.log('a');
-        var map = ['none', 'first', 'second', 'third'];
-        if (event.keyCode >= 48 && event.keyCode < 58) {
-            checked = $("input[name='choice']:checked");
-            if (checked) checked.prop('checked', false); // uncheck
-            var name = map[event.keyCode-48];
-            tocheck = $("input[name='choice']" +
-              "[value='"+name+"']");
-            if (!tocheck)
-                console.log("whoops");
-            tocheck.prop('checked', true); // check
+        if (event.keyCode >= 48 && event.keyCode < 58) { // ha szam
+            uncheckRadio();
+            checkRadio(event.keyCode-48); // keycode-48 lesz a szam
         } if (event.keyCode == 13) {
-            // nem megy fel a body-ba a keres
+            // nem megy fel a body-ba az event
             event.stopPropagation();
             $("#problem").focus();
+            $("#problem").select();
             // Call event.preventDefault() to not process the event
             event.preventDefault();
         }
     })});
+    // enter, tab tovabbmegy (lasd fentebb)
     $("#problem").get()[0].addEventListener('keydown', function(event) {
         if (event.keyCode == 13) {
             // nem megy fel a body-ba a keres
@@ -253,17 +286,27 @@ $(document).ready(function(){
             event.preventDefault();
         }
     });
+    // enter veglegesiti es atadja a fokusznak a tetejet
     $("#ok").get()[0].addEventListener('keydown', function(event) {
         if (event.keyCode == 13) {
             // nem megy fel a body-ba a keres
             event.stopPropagation();
             $(this).click();
-            $("#filter").focus();
+            clearData();
             // Call event.preventDefault() to not process the event
             event.preventDefault();
         }
     });
+    $("#problem").focus(function() {
+        $(this).select();
 
+        // Work around Chrome's little problem
+        $(this).onmouseup = function() {
+            // Prevent further mouseup intervention
+            $(this).onmouseup = null;
+            return false;
+        };
+    });
 });
 
 </script>
@@ -277,17 +320,17 @@ $(document).ready(function(){
 <!-- kiszűri azokat a csapatokat, amiknek nincs a nevében az adott szöveg -->
 <input type="text" id="filter"><br>
 <!-- Itt jelennek meg a megszűrt nevek -->
-<select id="teamNames" size="10"> //nem a legjobb megoldás
+<select id="teamNames" size="10">
 </select><br>
-<!--helyette inkább legyen <input type="list", és hozzá datalist option ok -->
 
-<input id="radio_0" type="radio" name="choice" value="first"> 1. Próba<br>
+<!-- azert adok id-t, hogy atadjam a fokuszt a selectbol szukseg eseten -->
+<input type="radio" id="radio_0" name="choice" value="none"> [0]: Passz<br>
 
-<input type="radio" name="choice" value="second"> 2. Próba<br>
+<input type="radio" name="choice" value="first"> [1]: 1. Próba<br>
 
-<input type="radio" name="choice" value="third"> 3. Próba<br>
+<input type="radio" name="choice" value="second"> [2]: 2. Próba<br>
 
-<input type="radio" name="choice" value="none"> Passz<br>
+<input type="radio" name="choice" value="third"> [3]: 3. Próba<br>
 
 <input type="number" id="problem" value="1" min="1" max="15">
 
