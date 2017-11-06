@@ -191,6 +191,25 @@ $(document).ready(function(){
         updateOptions();
     });
     updateOptions();
+
+    $("#filter").get()[0].addEventListener('keydown', function (event) {
+        if (event.keyCode == 27) {
+            event.stopPropagation();
+            $("#teamNames").focus();
+        
+            // Call event.preventDefault() to stop the character before the cursor
+            // from being deleted. Remove this line if you don't want to do that.
+            event.preventDefault();
+        }
+    });
+    $("#teamNames").get()[0].addEventListener('keydown', function(event) {
+        if (event.keyCode >= 48 && event.keyCode < 58) {
+            $('#teamNames').val($("#teamNames option")[event.keyCode-48-1].value);
+        } else if (event.keyCode == 13) {
+            $('#teamNames')
+        }
+    });
+
 });
 
 </script>
