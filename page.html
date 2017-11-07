@@ -77,9 +77,13 @@ function testTeam() {
 }
 
 // globális változók
-// base_scores: null az elejen, mert egytol indexeltem. TODO atirjam?
+// base_scores: null az elejen, mert egytol indexeltem. TODO atirjam? // perhaps -Tomi
+var filter_search_word =""; // -Tomi
 var base_scores = [null,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6];
 var teams=[];
+//option variables
+var _superFill=false; //épp nem működik, és elvi hibát tartalmaz
+
 // teszt, törölj ki
 teams.push(createTeam("Hello"));
 teams.push(createTeam("Darkness"));
@@ -154,6 +158,8 @@ function dataOK() {
     var team = searchExactTeam(teamname);
     team.getProblem(problem).setStatus(choice);
     updateOptions();
+    //_superFill
+    filter_search_word="";
 }
 
 testTeam();
@@ -175,8 +181,16 @@ function addOption(text,value) {
 function updateOptions() {
     var selected = $('#teamNames option:selected').val();
 
-    var substr = $("#filter").val();
+    if(_superFill) //-Tomi
+    {
+      var substr = filter_search_word;
+    }
+    else
+    {
+      var substr = $("#filter").val();
+    }
     var filtered = smartSearchTeam(substr);
+    if(_superFill) $("#filter").val(filtered.teamname); //-Tomi
     var length = filtered.length;
     clearOptions();
     for (var i = 0; i < length; i++)
@@ -192,7 +206,7 @@ function updateOptions() {
         }
     }
 }
-    
+
 function uncheckRadio() {
     checked = $("input[name='choice']:checked");
     if (checked) checked.prop('checked', false); // uncheck
@@ -217,14 +231,40 @@ function clearData() {
     checkRadio(0);
     $("#filter").focus();
 }
-    
+
 // event callbacks
 $(document).ready(function(){
-    $("#filter").on('input', function() {
+    $("#filter").on('input', function(event) {
         updateOptions();
     });
+    if(_superFill)
+    {
+      $("#filter").on('keydown', function(event) {
+        //console.log(event.keyCode);
+        if(event.keyCode == 8)
+        {
+          filter_search_word = filter_search_word.substring(0,filter_search_word.length-1);
+          //console.log(filter_search_word);
+        }
+      });
+      $("#filter").on('keypress', function(event) {
+        //great but forget it in keypress, also filters ] and /
+        var whitelist = "aábcdeéfghiíjklmnoóöőpqrstuúüűvwxyzAÁBCDEÉFGHIÍJKLMNOÓÖŐPQRSTUÚÜŰVWXYZ 1234567890,.-_+-*%=()\\|#&@$ß["+"'\"";
+          if(event.keyCode != 13)
+          {
+            white=false;
+            for(i=0;i<whitelist.length;i++)
+            {
+              if(event.char==whitelist[i])
+              white=true;
+            }
+            if(white)filter_search_word+=event.char;
+            //console.log(filter_search_word);
+          }
+      });
+    }
     updateOptions();
-    
+
     // hot-keyek
     // ha barhol escape-t nyomnak, akkor torli az adatokat
     $("body").get()[0].addEventListener('keydown', function() {
@@ -320,7 +360,7 @@ $(document).ready(function(){
 <!-- kiszűri azokat a csapatokat, amiknek nincs a nevében az adott szöveg -->
 <input type="text" id="filter"><br>
 <!-- Itt jelennek meg a megszűrt nevek -->
-<select id="teamNames" size="10">
+<select id="teamNames" size="10" tabindex='-1'>
 </select><br>
 
 <!-- azert adok id-t, hogy atadjam a fokuszt a selectbol szukseg eseten -->
