@@ -148,6 +148,9 @@ function searchExactTeam(str) {
 function loadTeams() {
     teams = []; // ne írj var-t!
     //teams = ...;
+    //BACKEND communication
+    console.log("Start:");
+    google.script.run.withSuccessHandler(function(data){console.log(data);}).settings();
 }
 
 function dataOK() {
@@ -233,6 +236,7 @@ function clearData() {
 
 // event callbacks
 $(document).ready(function(){
+        loadTeams();
     $("#filter").on('input', function(event) {
         updateOptions();
     });
