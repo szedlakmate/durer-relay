@@ -182,7 +182,8 @@ function updateOptions() {
     for (var i = 0; i < length; i++)
         addOption((i+1) + ': ' + filtered[i].teamname + ' (' + filtered[i].getScore(15, base_scores) + ')', filtered[i].teamname);
     // ha ki tudjuk ujra valasztani azt, ami a frissites elott volt
-    if ($("#teamNames option[value='"+selected+"']").length) {
+    if ($("#teamNames option[value='"+
+          $.escapeSelector(selected)+"']").length) {
         $('#teamNames').val(selected);
     } else {
         // egyebkent az elsot, ha van, kivalasztjuk
@@ -192,7 +193,7 @@ function updateOptions() {
         }
     }
 }
-    
+
 function uncheckRadio() {
     checked = $("input[name='choice']:checked");
     if (checked) checked.prop('checked', false); // uncheck
@@ -217,14 +218,14 @@ function clearData() {
     checkRadio(0);
     $("#filter").focus();
 }
-    
+
 // event callbacks
 $(document).ready(function(){
     $("#filter").on('input', function() {
         updateOptions();
     });
     updateOptions();
-    
+
     // hot-keyek
     // ha barhol escape-t nyomnak, akkor torli az adatokat
     $("body").get()[0].addEventListener('keydown', function() {
