@@ -267,7 +267,6 @@ $(document).ready(function(){
 
     // enterre (meg tabra, de az built-in) tovabbmegy a kovetkezo elemre
     $("#filter").get()[0].addEventListener('keydown', function (event) {
-            console.log(event.keyCode);
         if (_superFill &&
                 (event.keyCode == 13 || event.keyCode == 9)) {
             // enter or tab
@@ -275,9 +274,7 @@ $(document).ready(function(){
             $("#radio_0").focus();
             // Call event.preventDefault() to not process the event
             event.preventDefault();
-            console.log('basd1');
         } else if (event.keyCode == 13 || event.keyCode == 9    ) {
-            console.log('aasd');
             event.stopPropagation();
             $("#teamNames").focus();
             // Call event.preventDefault() to not process the event
@@ -302,7 +299,6 @@ $(document).ready(function(){
     $.each($("input[name='choice']"), function(_, radio) {
             radio.addEventListener('keydown',
             function (event) {
-        console.log('a');
         if (event.keyCode >= 48 && event.keyCode < 58) { // ha szam
             uncheckRadio();
             checkRadio(event.keyCode-48); // keycode-48 lesz a szam
