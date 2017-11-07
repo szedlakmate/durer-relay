@@ -43,6 +43,7 @@ function createProblem() {
 // name: csapatnév
 // id: csapatid
 function createTeam(name, id=null, num_problems=15) {
+    
     team = new Object();
     var problems = [null]; // 0. feladatot nullal feltöltöm
     for (var i = 1; i <= num_problems; i++)
@@ -75,21 +76,6 @@ function testTeam() {
         team.getScore(15, [null, 3,3,3,3,3,4,4,4,4,4,5,5,5,5,5])
     );
 }
-
-// globális változók
-// base_scores: null az elejen, mert egytol indexeltem. TODO atirjam? // perhaps -Tomi // mostmar jo ez igy -Laci
-var filter_search_word =""; // -Tomi
-var base_scores = [null,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6];
-var teams=[];
-//option variables
-var _superFill=false; //épp nem működik, és elvi hibát tartalmaz
-
-// teszt, törölj ki
-teams.push(createTeam("Hello"));
-teams.push(createTeam("Darkness"));
-teams.push(createTeam("My"));
-teams.push(createTeam("Old"));
-teams.push(createTeam("Friend"));
 
 // kereséshez segédfüggvény:
 // kiveszi az ékezeteket, szóközöket és case insensitive-vé teszi
@@ -165,8 +151,6 @@ function dataOK() {
     filter_search_word="";
 }
 
-testTeam();
-
 // clears all DOM options in DOM select
 function clearOptions() {
     $("#teamNames").empty();
@@ -233,10 +217,28 @@ function clearData() {
     checkRadio(0);
     $("#filter").focus();
 }
-
+// globális változók
+// base_scores: null az elejen, mert egytol indexeltem. TODO atirjam? // perhaps -Tomi // mostmar jo ez igy -Laci
+var filter_search_word =""; // -Tomi
+var base_scores = [null,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6];
+var teams=[];
+//option variables
+var _superFill=false; //épp nem működik, és elvi hibát tartalmaz
+global_teams = teams;
 // event callbacks
 $(document).ready(function(){
+
+console.log('asdasd');
+    testTeam();
         loadTeams();
+
+    // teszt, törölj ki
+    teams.push(createTeam("Hello"));
+    teams.push(createTeam("Darkness"));
+    teams.push(createTeam("My"));
+    teams.push(createTeam("Old"));
+    teams.push(createTeam("Friend"));
+
     $("#filter").on('input', function(event) {
         updateOptions();
     });
@@ -357,7 +359,6 @@ $(document).ready(function(){
             $("#teamNames").show();
     });
 });
-
 </script>
 
 <title>Dürer </title>
