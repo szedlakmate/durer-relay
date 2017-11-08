@@ -4,6 +4,7 @@ Features:
 -case insensitive search
 -search
 -full keyboard controll
+-no Windows Edge support
 
 
 Instructions:
