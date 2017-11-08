@@ -157,7 +157,21 @@
               //kill me
               google.script.run.withSuccessHandler(function(data){
                   //TODO get all data
-                  console.log(data);
+                    var i,j;
+                    for(i=0;i<data.length();i++)
+                    {
+                      let tmpTeam = createTeam(data[i][0]);
+                      for(j=1;j<16;i++)
+                      {
+                        if(data[i][j]!="")
+                        {
+                          tmpTeam.getProblem(j).setStatus(getChoice(j,data[i][j],base_scores))
+                        }
+                        teams.push(tmpTeam);
+                      }
+                    }
+                    console.log(teams);
+                  });
                   $("#filter").val("");
               }).getData(sheetName,userName);
             }).settings();
@@ -242,6 +256,24 @@
             checkRadio(0);
             $("#filter").focus();
         }
+        function getChoice(problemNumber,problemScore,base_score)
+        {
+          switch (base_score[problemNumber]-problemScore) {
+            case 0:
+              return 'first';
+              break;
+            case 1:
+              return 'second';
+              break;
+            case 2:
+              return 'third';
+              break;
+            default:
+            return 'none'
+
+          }
+        }
+
         // globális változók
         // base_scores: null az elejen, mert egytol indexeltem. TODO atirjam? // perhaps -Tomi // mostmar jo ez igy -Laci
         var filter_search_word =""; // -Tomi

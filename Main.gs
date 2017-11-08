@@ -25,8 +25,8 @@ function GBS()
 function durerGUI()
 {
      var html = HtmlService.createHtmlOutputFromFile('Page.html')
-      .setWidth(300)
-      .setHeight(200);
+      .setWidth(500)
+      .setHeight(600);
  SpreadsheetApp.getUi().showModalDialog(html, 'Adding data');
 };
 
@@ -61,7 +61,7 @@ function setTeamPoints(teamName,problemNumber,problemPoint,sheetName,user)
 
 function getData(sheetName,user)
 {
-  sheetName = "Sheet1";
+  Logger.log("startData")
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
   var last = sheet.getLastRow();
   var datas = sheet.getRange(2,1,last-1,16).getValues();
