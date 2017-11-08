@@ -375,7 +375,7 @@
     <title>Dürer </title>
     </head>
     <body>
-        <form class="container-fluid">
+        <form class="container-fluid form-horizontal">
             <div id="main" class="form-group">
                 <!-- Html part -->
 
@@ -395,13 +395,14 @@
 
                     <input type="radio" name="choice" class="form-check-input" value="third"> [3]: 3. Próba<br>
                 </div>
+                <div class="form-row">
+                    <input type="number" class="form-group form-control " style="width: 70%" id="problem" value="1" min="1" max="15">
 
-                <input type="number" class="form-control" id="problem" value="1" min="1" max="15">
-
-                <input type="button" id="ok" class="btn btn-success" onclick="dataOK()" value="Oké" >
+                    <input type="button" id="ok" class="btn btn-success form-group " onclick="dataOK()" value="Oké" >
+                </div>
             </div>
 
-            <div id="settings" class="form-check container-fluid">
+            <div id="settings" class="form-check col-sm-10 col-xs-10">
                 <input type="checkbox" id="superfill" class="form-check-input"> superfill
             </div>
         </form>
