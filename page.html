@@ -146,9 +146,6 @@
             teams = []; // ne írj var-t!
             //teams = ...;
             //BACKEND communication
-            teams = []; // ne írj var-t!
-            //teams = ...;
-            //BACKEND communication
             console.log("Start loading:");
             google.script.run.withSuccessHandler(function(data){
               console.log(data);
@@ -158,21 +155,24 @@
               google.script.run.withSuccessHandler(function(data){
                   //TODO get all data
                     var i,j;
-                    for(i=0;i<data.length();i++)
+                    var tmpTeam =new Object();
+                    for(i=0;i<data.length;i++)
                     {
-                      let tmpTeam = createTeam(data[i][0]);
+                       tmpTeam = createTeam(data[i][0]);
+                      console.log(data[i][7])
                       for(j=1;j<16;i++)
                       {
+                        console.log(data[i][j]);
                         if(data[i][j]!="")
                         {
-                          tmpTeam.getProblem(j).setStatus(getChoice(j,data[i][j],base_scores))
+                          console.log("!!");
+                          tmpTeam.getProblem(j).setStatus(getChoice(j,data[i][j],base_scores));
                         }
-                        teams.push(tmpTeam);
                       }
+                      teams.push(tmpTeam);
                     }
                     console.log(teams);
-                  });
-                  $("#filter").val("");
+                    $("#filter").val("");
               }).getData(sheetName,userName);
             }).settings();
             $("#filter").val("Loading");
