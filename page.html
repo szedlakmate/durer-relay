@@ -382,25 +382,27 @@
                 <!-- kiszűri azokat a csapatokat, amiknek nincs a nevében az adott szöveg -->
                 <input type="text" id="filter" class="form-control"><br>
                 <!-- Itt jelennek meg a megszűrt nevek -->
-                <select id="teamNames" size="10" tabindex='-1'>
+                <select id="teamNames" size="10" tabindex='-1' class="form-control">
                 </select><br>
 
                 <!-- azert adok id-t, hogy atadjam a fokuszt a selectbol szukseg eseten -->
-                <input type="radio" id="radio_0" name="choice" value="none"> [0]: Passz<br>
+                <div class="form-check container-fluid">
+                    <input type="radio" id="radio_0" class="form-check-input" name="choice" value="none"> [0]: Passz<br>
 
-                <input type="radio" name="choice" value="first"> [1]: 1. Próba<br>
+                    <input type="radio" name="choice" class="form-check-input" value="first"> [1]: 1. Próba<br>
 
-                <input type="radio" name="choice" value="second"> [2]: 2. Próba<br>
+                    <input type="radio" name="choice" class="form-check-input" value="second"> [2]: 2. Próba<br>
 
-                <input type="radio" name="choice" value="third"> [3]: 3. Próba<br>
+                    <input type="radio" name="choice" class="form-check-input" value="third"> [3]: 3. Próba<br>
+                </div>
 
                 <input type="number" class="form-control" id="problem" value="1" min="1" max="15">
 
                 <input type="button" id="ok" class="btn btn-success" onclick="dataOK()" value="Oké" >
             </div>
 
-            <div id="settings">
-                <input type="checkbox" id="superfill" class="form-check"> superfill
+            <div id="settings" class="form-check container-fluid">
+                <input type="checkbox" id="superfill" class="form-check-input"> superfill
             </div>
         </form>
 
