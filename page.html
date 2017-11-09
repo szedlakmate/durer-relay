@@ -438,45 +438,54 @@
         });
     </script>
 
-    <title>Dürer </title>
-    </head>
-    <body>
-        <form class="container-fluid form-horizontal">
-            <div id="main" class="form-group">
-                <!-- Html part -->
+    <title>Dürer Relay</title>
+</head>
+<body>
+    <form class="container-fluid form-horizontal">
+        <div id="main" class="form-group">
+            <!-- Html part -->
 
-                <!-- kiszűri azokat a csapatokat, amiknek nincs a nevében az adott szöveg -->
-                <input type="text" id="filter" class="form-control"><br>
-                <!-- Itt jelennek meg a megszűrt nevek -->
-                <select id="teamNames" size="10" tabindex='-1' class="form-control">
-                </select><br>
+            <!-- kiszűri azokat a csapatokat, amiknek nincs a nevében az adott szöveg -->
+            <input type="text" id="filter" class="form-control" placeholder="Csapat keresése"><br>
+            <!-- Itt jelennek meg a megszűrt nevek -->
+            <select id="teamNames" size="12" tabindex='-1' class="form-control">
+            </select><br>
 
-                <!-- azert adok id-t, hogy atadjam a fokuszt a selectbol szukseg eseten -->
-                <div class="form-row">
-                    <p>Feladat sorszáma</p></br>
-                    <input type="number" class="form-group form-control " style="width: 70%" id="problem" value="1" min="1" max="15">
+            <!-- azert adok id-t, hogy atadjam a fokuszt a selectbol szukseg eseten -->
+            <div class="form-row">
+                <div class="col">
+                    <p>Feladat sorszáma:&ensp;</p>
                 </div>
-                <div class="form-check container-fluid">
-                    <input type="radio" id="radio_0" class="form-check-input" name="choice" value="none"> [0]: Passz<br>
-
-                    <input type="radio" name="choice" class="form-check-input" value="first"> [1]: 1. Próba<br>
-
-                    <input type="radio" name="choice" class="form-check-input" value="second"> [2]: 2. Próba<br>
-
-                    <input type="radio" name="choice" class="form-check-input" value="third"> [3]: 3. Próba<br>
-                </div>
-                <div class="form-row">
-                <input type="button" id="ok" class="btn btn-success form-group " onclick="dataOK()" value="Oké" >
+                <div class="col">
+                    <input type="number" class="form-group form-control " id="problem" value="1" min="1" max="15">
                 </div>
             </div>
-
-            <div id="settings" class="form-check col-sm-10 col-xs-10">
-                <input type="checkbox" id="superfill" class="form-check-input"> superfill
+            <div class="form-check container-fluid">
+                <div class="row">
+                    <div class="col">
+                        <input type="radio" id="radio_0" class="form-check-input" name="choice" value="none"> [0]: Passz<br>
+                    </div>
+                    <div class="col">
+                        <input type="radio" name="choice" class="form-check-input" value="first"> [1]: 1. Próba<br> 
+                        <input type="radio" name="choice" class="form-check-input" value="second"> [2]: 2. Próba<br>
+                        <input type="radio" name="choice" class="form-check-input" value="third"> [3]: 3. Próba<br>                                         
+                    </div>
+                </div>
             </div>
-        </form>
+            <div class="container-fluid float-right">
+                <input type="button" id="ok" class="btn btn-success form-group float-right" onclick="dataOK()" value="Oké" >
+            </div>
+            <div id="settings" class="form-check-input container-fluid" data-toggle="buttons">
+                <label class="btn btn-warning" id="superfill">
+                    <input type="checkbox"  checked autocomplete="off"> superfill
+                </label>
+            </div>
+        </div>
 
-        <script>
-        </script>
-    </body>
+    </form>
 
-    </html>
+    <script>
+    </script>
+</body>
+
+</html>
