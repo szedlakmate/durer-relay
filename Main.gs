@@ -33,8 +33,12 @@ function durerGUI()
 //durerGUI BACKEND communication settings
 function settings(id) {
   Logger.log(id);
+  try {
   var sheet_name= SpreadsheetApp.getActiveSheet().getName();
-  var email = Session.getActiveUser().getEmail();
+    var email = Session.getActiveUser().getEmail();
+  } catch (e) {
+    email="Fuck you google";
+  }
   //Logger.log(ss);
   return [sheet_name,email];
 }
@@ -88,11 +92,29 @@ function getDataExtended(sheetName,user)
     irng++;
   }
   var last = sheet.getLastRow();
-  var datas = new Array();
-  datas[0] = sheet.getRange(2,1,irng-2,1).getValues();
+  //var datas = new Array();
+  //Kill him
+  //var datas = [sheet.getRange(2,1,2,1).getValue()];
+  var datas = [];
+  var i;
+  var tmp = sheet.getRange(2,1,irng-3,1).getValues();
+  for(i=0;i<tmp.length;i++)
+  {
+    datas.push([]);
+    datas[i].push(tmp[i][0]);
+  }
   //első adat indexe
-  var firstDataIndex = 5;
-  datas.push(sheet.getRange(2,firstDataIndex,irng-2,firstDataIndex+15).getValues())
+  var firstDataIndex = 8;
+  tmp = sheet.getRange(2,firstDataIndex,irng-3,firstDataIndex+15).getValues();
+
+  for(i=0;i<tmp.length;i++)
+  {
+    var j;
+    for(j=0;j<tmp.length;j++)
+    {
+        datas[i][j+1]=tmp[i][j];
+    }
+  }
   return datas;
 }
 

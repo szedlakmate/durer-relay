@@ -153,6 +153,7 @@
               userName = data[1];
               //kill me
               google.script.run.withSuccessHandler(function(data){
+                console.log(data);
                   //TODO get all data
                     var i,j;
                     var tmpTeam =new Object();
@@ -172,7 +173,7 @@
                     console.log(teams);
                     clearData();
                     updateOptions();
-              }).getData(sheetName,userName);
+              }).getDataExtended(sheetName,userName);
             }).settings();
             $("#filter").val("Loading");
         }
