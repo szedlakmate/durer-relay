@@ -8,24 +8,37 @@ function onOpen() {
        .addItem('Bevitel indít','durerGUI')
        .addSeparator()
        .addSubMenu(SpreadsheetApp.getUi().createMenu('Beállítások')
-           .addItem('soon', 'tmp')
+           .addItem('BackendTest', 'GBS')
            .addItem('soon', 'tmp'))
        .addToUi();
 };
+//durer_relay GBE setup
+function GBS()
+{
+     var html2 = HtmlService.createHtmlOutputFromFile('BackendTest.html')
+      .setWidth(300)
+      .setHeight(200);
+ SpreadsheetApp.getUi().showModalDialog(html2, 'GBE test');
+};
+
 //durer_relay GUI setup
 function durerGUI()
 {
      var html = HtmlService.createHtmlOutputFromFile('Page.html')
-      .setWidth(300)
-      .setHeight(200);
+      .setWidth(350)
+      .setHeight(500);
  SpreadsheetApp.getUi().showModalDialog(html, 'Adding data');
 };
 
 //durerGUI BACKEND communication settings
 function settings(id) {
   Logger.log(id);
+  try {
   var sheet_name= SpreadsheetApp.getActiveSheet().getName();
-  var email = Session.getActiveUser().getEmail();
+    var email = Session.getActiveUser().getEmail();
+  } catch (e) {
+    email="Fuck you google";
+  }
   //Logger.log(ss);
   return [sheet_name,email];
 }
@@ -42,31 +55,67 @@ function setValue(y,x,val,sheetName){
 
 function setTeamPoints(teamName,problemNumber,problemPoint,sheetName,user)
 {
+  var offset = 7;
   var y = getTeamY(teamName,sheetName);
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  //sheet.getRange(y+2,problemNumber+1).setBackground("green");
-  sheet.getRange(y+2,problemNumber+1).setValue(problemPoint);
+  sheet.getRange(y+2,problemNumber+1+offset).setBackground("green");
+  sheet.getRange(y+2,problemNumber+1+offset).setValue(problemPoint);
   //TODO loggolás!!!
   return true;
 }
 
-function camelArray(headers) {
-  var keys = [];
-  for (var i = 0; i < headers.length; ++i) {
-    var key = camelString(headers[i]);
-    if (key.length > 0) {
-      keys.push(key);
-    }
-  }
-  return keys;
-}
-
-
 function getData(sheetName,user)
 {
+  Logger.log("startData")
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  var irng =1;
+  lastRow = sheet.getRange(irng,1);
+  while(lastRow.getValue()!=""){
+    lastRow = sheet.getRange(irng,1);
+    if(irng>100)break;
+    irng++;
+  }
   var last = sheet.getLastRow();
-  var datas = sheet.getRange(2,1,last-1,16).getValues();
+  var datas = sheet.getRange(2,1,irng-2,16).getValues();
+  return datas;
+}
+
+//teljes táblázathoz
+function getDataExtended(sheetName,user)
+{
+  Logger.log("startData")
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  var irng =1;
+  lastRow = sheet.getRange(irng,1);
+  while(lastRow.getValue()!=""){
+    lastRow = sheet.getRange(irng,1);
+    if(irng>100)break;
+    irng++;
+  }
+  var last = sheet.getLastRow();
+  //var datas = new Array();
+  //Kill him
+  //var datas = [sheet.getRange(2,1,2,1).getValue()];
+  var datas = [];
+  var i;
+  var tmp = sheet.getRange(2,1,irng-3,1).getValues();
+  for(i=0;i<tmp.length;i++)
+  {
+    datas.push([]);
+    datas[i].push(tmp[i][0]);
+  }
+  //első adat indexe
+  var firstDataIndex = 8;
+  tmp = sheet.getRange(2,firstDataIndex,irng-3,firstDataIndex+15).getValues();
+
+  for(i=0;i<tmp.length;i++)
+  {
+    var j;
+    for(j=0;j<tmp.length;j++)
+    {
+        datas[i][j+1]=tmp[i][j];
+    }
+  }
   return datas;
 }
 
