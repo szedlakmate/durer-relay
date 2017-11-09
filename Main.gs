@@ -55,10 +55,11 @@ function setValue(y,x,val,sheetName){
 
 function setTeamPoints(teamName,problemNumber,problemPoint,sheetName,user)
 {
+  var offset = 6;
   var y = getTeamY(teamName,sheetName);
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  sheet.getRange(y+2,problemNumber+1).setBackground("green");
-  sheet.getRange(y+2,problemNumber+1).setValue(problemPoint);
+  //sheet.getRange(y+2,problemNumber+1+offset).setBackground("green");
+  sheet.getRange(y+2,problemNumber+1+offset).setValue(problemPoint);
   //TODO loggolás!!!
   return true;
 }
