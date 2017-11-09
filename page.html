@@ -170,7 +170,8 @@
                       teams.push(tmpTeam);
                     }
                     console.log(teams);
-                    $("#filter").val("");
+                    clearData();
+                    updateOptions();
               }).getData(sheetName,userName);
             }).settings();
             $("#filter").val("Loading");
@@ -183,6 +184,21 @@
             // validalas
             var team = searchExactTeam(teamname);
             team.getProblem(problem).setStatus(choice);
+            var score=team.getProblem(problem).getScore(base_scores[problem]);
+            console.log(base_scores+" "+score);
+            if(_asycnron)
+            {
+              google.script.run.setTeamPoints(teamname,problem,score,sheetName,userName);
+            }
+            else
+            {
+              //sync BACKEND
+              google.script.run.withSuccessHandler(function(data){
+                //loadshow hide
+                console.log(data);
+              }).setTeamPoints(teamname,problem,score,sheetName,userName);
+              //loadshow show
+            }
             updateOptions();
             //_superFill
             filter_search_word="";
@@ -274,6 +290,7 @@
 
         // globális változók
         // base_scores: null az elejen, mert egytol indexeltem. TODO atirjam? // perhaps -Tomi // mostmar jo ez igy -Laci
+        var _asycnron = false;
         var filter_search_word =""; // -Tomi
         var base_scores = [null,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6];
         var teams=[];
@@ -284,17 +301,19 @@
         global_teams = teams;
         // event callbacks
         $(document).ready(function(){
-
-            console.log('asdasd');
-            testTeam();
+            addOption("loading","null");
+            console.log('Loaded');
             loadTeams();
 
+            //testTeam();
             // teszt, törölj ki
+            /*k
             teams.push(createTeam("Hello"));
             teams.push(createTeam("Darkness"));
             teams.push(createTeam("My"));
             teams.push(createTeam("Old"));
             teams.push(createTeam("Friend"));
+            */
 
             $("#filter").on('input', function(event) {
                 updateOptions();
@@ -432,6 +451,10 @@
                 </select><br>
 
                 <!-- azert adok id-t, hogy atadjam a fokuszt a selectbol szukseg eseten -->
+                <div class="form-row">
+                    <p>Feladat sorszáma</p></br>
+                    <input type="number" class="form-group form-control " style="width: 70%" id="problem" value="1" min="1" max="15">
+                </div>
                 <div class="form-check container-fluid">
                     <input type="radio" id="radio_0" class="form-check-input" name="choice" value="none"> [0]: Passz<br>
 
@@ -442,9 +465,7 @@
                     <input type="radio" name="choice" class="form-check-input" value="third"> [3]: 3. Próba<br>
                 </div>
                 <div class="form-row">
-                    <input type="number" class="form-group form-control " style="width: 70%" id="problem" value="1" min="1" max="15">
-
-                    <input type="button" id="ok" class="btn btn-success form-group " onclick="dataOK()" value="Oké" >
+                <input type="button" id="ok" class="btn btn-success form-group " onclick="dataOK()" value="Oké" >
                 </div>
             </div>
 

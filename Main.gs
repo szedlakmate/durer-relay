@@ -53,7 +53,7 @@ function setTeamPoints(teamName,problemNumber,problemPoint,sheetName,user)
 {
   var y = getTeamY(teamName,sheetName);
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  //sheet.getRange(y+2,problemNumber+1).setBackground("green");
+  sheet.getRange(y+2,problemNumber+1).setBackground("green");
   sheet.getRange(y+2,problemNumber+1).setValue(problemPoint);
   //TODO loggolás!!!
   return true;
