@@ -63,8 +63,36 @@ function getData(sheetName,user)
 {
   Logger.log("startData")
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  var irng =1;
+  lastRow = sheet.getRange(irng,1);
+  while(lastRow.getValue()!=""){
+    lastRow = sheet.getRange(irng,1);
+    if(irng>100)break;
+    irng++;
+  }
   var last = sheet.getLastRow();
-  var datas = sheet.getRange(2,1,last-1,16).getValues();
+  var datas = sheet.getRange(2,1,irng-2,16).getValues();
+  return datas;
+}
+
+//teljes táblázathoz
+function getDataExtended(sheetName,user)
+{
+  Logger.log("startData")
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  var irng =1;
+  lastRow = sheet.getRange(irng,1);
+  while(lastRow.getValue()!=""){
+    lastRow = sheet.getRange(irng,1);
+    if(irng>100)break;
+    irng++;
+  }
+  var last = sheet.getLastRow();
+  var datas = new Array();
+  datas[0] = sheet.getRange(2,1,irng-2,1).getValues();
+  //első adat indexe
+  var firstDataIndex = 5;
+  datas.push(sheet.getRange(2,firstDataIndex,irng-2,firstDataIndex+15).getValues())
   return datas;
 }
 
