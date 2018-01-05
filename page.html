@@ -70,7 +70,7 @@ function createProblem() {
 // id: csapatid
 //num_ptoblems : feladatok száma
 //_____________________________________________________SET NUM_PROBLEMS ACCORDING TO THE CURRENT SITUATION (also see features)
-function createTeam(name, id=null, num_problems=15) {
+function createTeam(name, id=null, num_problems=16) {
 
     team = new Object();
     var problems = [null]; // 0. feladatot nullal feltöltöm
@@ -203,10 +203,12 @@ google.script.run.withSuccessHandler(function(data){
               }
             teams.push(tmpTeam);
           }
-        $("#filter").val("");
+//__________//set number input max
+        $("#problem").attr("max",tmpTeam.num_problems);
         console.log(teams);
         clearData();
         updateOptions();
+        $("#filter").val("");
     }).getDataExtended(sheetName,userName);
 }).settings();
 $("#filter").val("Loading");
@@ -221,6 +223,8 @@ function dataOK() {
     team.getProblem(problem).setStatus(choice);
     var score=team.getProblem(problem).getPretty(base_scores[problem]);
     console.log("Sendt've:"+score);
+    console.log({"teamname":teamname,"choice":choice,"problem":problem,
+    "score":score,"sheetName":sheetName,"userName":userName});
     if(_asycnron)
       {
         google.script.run.setTeamPoints(teamname,problem,score,sheetName,userName);
@@ -330,7 +334,7 @@ function getChoice(problemNumber,problemScore,base_score)
 // base_scores: null az elejen, mert egytol indexeltem. TODO atirjam? // perhaps -Tomi // mostmar jo ez igy -Laci
 var _asycnron = false;
 var filter_search_word =""; // -Tomi
-var base_scores = [null,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6];
+var base_scores = [null,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6];
 var teams=[];
 var sheetName = "";
 var userName = "";
