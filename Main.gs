@@ -110,7 +110,7 @@ function getDataExtended(sheetName,user)
   }
   //első adat indexe
   var firstDataIndex = 2;
-  tmp = sheet.getRange(2,firstDataIndex,irng-3,firstDataIndex+13).getValues();
+  tmp = sheet.getRange(2,firstDataIndex,irng-3,firstDataIndex+23).getValues();
   Logger.log(tmp.length);
   for(i=0;i<tmp.length;i++)
   {
