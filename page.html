@@ -31,7 +31,7 @@ function createProblem() {
             case 'third': return base_score-2;
             case 'pass': return 0;
             default:
-            console.log('Invalid problem state');
+            console.log('Invalid problem state/n Fired by .getScore()');
                 // itt kéne egy rohadtnagy error
             }
     };
@@ -44,7 +44,7 @@ function createProblem() {
             case 'third': return (base_score-2);
             case 'pass': return 0;
             default:
-            console.log('Invalid problem state');
+            console.log('Invalid problem state /n Fired by .getPretty');
                 // itt kéne egy rohadtnagy error
             }
     };
@@ -57,7 +57,7 @@ function createProblem() {
         case 'pass':
             break;
         default:
-            console.log('Invalid problem state. Valid states are none, first, second, third');
+            console.log('Invalid problem state. Valid states are none, first, second, third, pass');
             // itt kéne egy rohadtnagy error
         }
         this.status = new_status;
@@ -68,6 +68,8 @@ function createProblem() {
 // Team objektum készítése
 // name: csapatnév
 // id: csapatid
+//num_ptoblems : feladatok száma
+//_____________________________________________________SET NUM_PROBLEMS ACCORDING TO THE CURRENT SITUATION (also see features)
 function createTeam(name, id=null, num_problems=15) {
 
     team = new Object();
@@ -76,6 +78,7 @@ function createTeam(name, id=null, num_problems=15) {
         problems.push(createProblem());
     team.problems = problems;
     team.teamname = name; // !! nem name, mert azt használhatják kívülről
+    team.num_problems = num_problems;
     team.id = id;
     team.getScore = function(num_problems, base_scores) {
         var sum = 0;
@@ -84,19 +87,27 @@ function createTeam(name, id=null, num_problems=15) {
         return sum;
     };
     team.getProblem = function(i) {
-        if (i < 1 || i > 15)
+        if (i < 1 || i > num_problems)
             console.log('ERROR!');
         return this.problems[i];
     }
     // returns the index of the problem next to the last solved one
     team.guessNext = function() {
-        for (var i=1; i<=15; i++) {
+        for (var i=1; i<=num_problems; i++) {
             if(this.problems[i].status=='none') { // ha megtaláltuk a legutolsót
                 return i;//akkor visszaadjuk a következőt
             }
         }
-        return 15;
+        return num_problems;
     };
+    team.guessLast = function(){    //-Tomi
+      for (var i=num_problems; i>=0; i++) {
+          if(this.problems[i].status!='none') { // ha megtaláltuk a legelsőt hátulról
+              return i;//akkor visszaadjuk azt
+          }
+      }
+      return 0;
+    }
     return team;
 }
 
@@ -168,35 +179,37 @@ function searchExactTeam(str) {
 
 function loadTeams() {
     teams = []; // ne írj var-t!
-    //teams = ...;
-    //BACKEND communication
-    console.log("Start loading:");
+//teams = ...;
+//BACKEND communication
+console.log("Start loading:");
+google.script.run.withSuccessHandler(function(data){
+    console.log(data);
+    sheetName=data[0];
+    userName = data[1];
+    //kill me
     google.script.run.withSuccessHandler(function(data){
-      console.log(data);
-      sheetName=data[0];
-      userName = data[1];
-      //kill me
-      google.script.run.withSuccessHandler(function(data){
         console.log(data);
-          //TODO get all data
-            var i,j;
-            var tmpTeam = new Object();
-            for(i=0;i<data.length;i++)
-            {
-               tmpTeam = createTeam(data[i][0]);
-              for(j=1;j<16;j++)
+        $("#filter").val("Loading");
+        //TODO get all data
+        var i,j;
+        var tmpTeam = new Object();
+        for(i=0;i<data.length;i++)
+          {
+            tmpTeam = createTeam(data[i][0]);
+            for(j=1;j<=tmpTeam.num_problems;j++)
               {
-              // Changed, to test
+                // Changed, to test
                 tmpTeam.getProblem(j).setStatus(getChoice(j,data[i][j],base_scores));
               }
-              teams.push(tmpTeam);
-            }
-            console.log(teams);
-            clearData();
-            updateOptions();
-      }).getDataExtended(sheetName,userName);
-    }).settings();
-    $("#filter").val("Loading");
+            teams.push(tmpTeam);
+          }
+        $("#filter").val("");
+        console.log(teams);
+        clearData();
+        updateOptions();
+    }).getDataExtended(sheetName,userName);
+}).settings();
+$("#filter").val("Loading");
 }
 
 function dataOK() {
@@ -209,18 +222,18 @@ function dataOK() {
     var score=team.getProblem(problem).getPretty(base_scores[problem]);
     console.log("Sendt've:"+score);
     if(_asycnron)
-    {
-      google.script.run.setTeamPoints(teamname,problem,score,sheetName,userName);
-    }
+      {
+        google.script.run.setTeamPoints(teamname,problem,score,sheetName,userName);
+      }
     else
-    {
-      //sync BACKEND
-      google.script.run.withSuccessHandler(function(data){
-        //loadshow hide
-        console.log(data);
-      }).setTeamPoints(teamname,problem,score,sheetName,userName);
-      //loadshow show
-    }
+      {
+        //sync BACKEND
+        google.script.run.withSuccessHandler(function(data){
+          //loadshow hide
+          console.log(data);
+        }).setTeamPoints(teamname,problem,score,sheetName,userName);
+        //loadshow show
+      }
     updateOptions();
     clearData();
     //_superFill
@@ -519,14 +532,14 @@ $(document).ready(function(){
     <div class="form-check container-fluid">
         <div class="row">
             <div class="col">
+                <!--<input type="radio" class="form-check-input" name="choice" value="none"> [0]: Üres<br> -->
+                <input type="radio" name="choice" class="form-check-input" value="pass"> [4]: Passz<br>
+  </div>
+            <div class="col">
                 <input type="radio" id="radio_0" name="choice" class="form-check-input" value="first"> [1]: 1. Próba<br>
                 <input type="radio" name="choice" class="form-check-input" value="second"> [2]: 2. Próba<br>
                 <input type="radio" name="choice" class="form-check-input" value="third"> [3]: 3. Próba<br>
             </div>
-            <div class="col">
-                <!--<input type="radio" class="form-check-input" name="choice" value="none"> [0]: Üres<br> -->
-                <input type="radio" name="choice" class="form-check-input" value="pass"> [4]: Passz<br>
-  </div>
 </div>
 </div>
 <div class="row">
