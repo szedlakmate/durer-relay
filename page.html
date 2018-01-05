@@ -29,26 +29,41 @@ function createProblem() {
             case 'first': return base_score;
             case 'second': return base_score-1;
             case 'third': return base_score-2;
+            case 'pass': return 0;
             default:
             console.log('Invalid problem state');
                 // itt kéne egy rohadtnagy error
             }
-        };
-        problem.setStatus = function(new_status) {
-            switch (this.status) {
-                case 'none':
-                case 'first':
-                case 'second':
-                case 'third':
-                break;
-                default:
-                console.log('Invalid problem state. Valid states are none, first, second, third');
+    };
+    // get score for pretty output (differentiates "none" and "pass")
+    problem.getPretty = function(base_score) {
+        switch (this.status) {
+            case 'none': return '';
+            case 'first': return base_score;
+            case 'second': return (base_score-1);
+            case 'third': return (base_score-2);
+            case 'pass': return 0;
+            default:
+            console.log('Invalid problem state');
                 // itt kéne egy rohadtnagy error
             }
-            this.status = new_status;
-        };
-        return problem;
-    }
+    };
+    problem.setStatus = function(new_status) {
+        switch (this.status) {
+        case 'none':
+        case 'first':
+        case 'second':
+        case 'third':
+        case 'pass':
+            break;
+        default:
+            console.log('Invalid problem state. Valid states are none, first, second, third');
+            // itt kéne egy rohadtnagy error
+        }
+        this.status = new_status;
+    };
+    return problem;
+}
 
 // Team objektum készítése
 // name: csapatnév
@@ -73,6 +88,15 @@ function createTeam(name, id=null, num_problems=15) {
             console.log('ERROR!');
         return this.problems[i];
     }
+    // returns the index of the problem next to the last solved one
+    team.guessNext = function() {
+        for (var i=1; i<=15; i++) {
+            if(this.problems[i].status=='none') { // ha megtaláltuk a legutolsót
+                return i;//akkor visszaadjuk a következőt
+            }
+        }
+        return 15;
+    };
     return team;
 }
 
@@ -81,7 +105,7 @@ function testTeam() {
     var team = createTeam("Szprájt");
     team.getProblem(1).setStatus('first');
     team.getProblem(11).setStatus('second');
-    team.getProblem(15).setStatus('second');
+    team.getProblem(15).setStatus('pass');
 
     console.log("Test#1: ",
         team.getScore(15, [null, 3,3,3,3,3,4,4,4,4,4,5,5,5,5,5])
@@ -156,17 +180,14 @@ function loadTeams() {
         console.log(data);
           //TODO get all data
             var i,j;
-            var tmpTeam =new Object();
+            var tmpTeam = new Object();
             for(i=0;i<data.length;i++)
             {
                tmpTeam = createTeam(data[i][0]);
               for(j=1;j<16;j++)
               {
-                if(data[i][j]!="")
-                {
-                  console.log("!!");
-                  tmpTeam.getProblem(j).setStatus(getChoice(j,data[i][j],base_scores));
-                }
+              // Changed, to test
+                tmpTeam.getProblem(j).setStatus(getChoice(j,data[i][j],base_scores));
               }
               teams.push(tmpTeam);
             }
@@ -185,8 +206,8 @@ function dataOK() {
     // validalas
     var team = searchExactTeam(teamname);
     team.getProblem(problem).setStatus(choice);
-    var score=team.getProblem(problem).getScore(base_scores[problem]);
-    console.log(base_scores+" "+score);
+    var score=team.getProblem(problem).getPretty(base_scores[problem]);
+    console.log("Sendt've:"+score);
     if(_asycnron)
     {
       google.script.run.setTeamPoints(teamname,problem,score,sheetName,userName);
@@ -201,6 +222,7 @@ function dataOK() {
       //loadshow show
     }
     updateOptions();
+    clearData();
     //_superFill
     filter_search_word="";
 }
@@ -229,8 +251,8 @@ function updateOptions() {
       substr = $("#filter").val();
   }
   var filtered = smartSearchTeam(substr);
-    if (_superFill) $("#filter").val(filtered.teamname); //-Tomi
     var length = filtered.length;
+    if (_superFill && length > 0) $("#filter").val(filtered[0].teamname); //-Tomi
     clearOptions();
     for (var i = 0; i < length; i++)
         addOption((i+1) + ': ' + filtered[i].teamname + ' (' + filtered[i].getScore(15, base_scores) + ')', filtered[i].teamname);
@@ -253,7 +275,7 @@ function uncheckRadio() {
 }
 
 function checkRadio(num) {
-    var map = ['none', 'first', 'second', 'third'];
+    var map = ['none', 'first', 'second', 'third', 'pass'];
     var name = map[num];
     tocheck = $("input[name='choice']" +
       "[value='"+name+"']");
@@ -268,11 +290,13 @@ function clearData() {
     updateOptions();
     $("#problem").val(1);
     uncheckRadio();
-    checkRadio(0);
+    checkRadio(1);
     $("#filter").focus();
 }
 function getChoice(problemNumber,problemScore,base_score)
 {
+// TODO add pass as option
+  if (problemScore===0) return 'pass';
   switch (base_score[problemNumber]-problemScore) {
     case 0:
       return 'first';
@@ -347,14 +371,25 @@ $(document).ready(function(){
             event.preventDefault();
         }
     });
+    // ha kiválasztanak valamit, akkor a filter értékét frissítjük vele
+    $("#teamNames").get()[0].addEventListener('change', function(event) {
+        event.stopPropagation();
 
+        var val = $('#teamNames').val();
+        $("#filter").val(val);
+        var team = searchExactTeam(val);
+        $("#problem").val(team.guessNext());
+        //updateOptions();
+
+        event.preventDefault();
+    });
     // enterre (meg tabra, de az built-in) tovabbmegy a kovetkezo elemre
     $("#filter").get()[0].addEventListener('keydown', function (event) {
         if (_superFill &&
             (event.keyCode == 13 || event.keyCode == 9)) {
             // enter or tab
-        event.stopPropagation();
-        $("#radio_0").focus();
+            event.stopPropagation();
+            $("#radio_0").focus();
             // Call event.preventDefault() to not process the event
             event.preventDefault();
         } else if (event.keyCode == 13 || event.keyCode == 9    ) {
@@ -366,11 +401,18 @@ $(document).ready(function(){
     });
     // enterre (meg tabra, de az built-in) tovabbmegy a kovetkezo elemre
     // barmilyen (egyjegyu) szamra pedig kivalasztja az annyiadik elemet
+
     $("#teamNames").get()[0].addEventListener('keydown', function(event) {
         if (event.keyCode >= 48 && event.keyCode < 58) {
-            $('#teamNames').val($("#teamNames option")[event.keyCode-48-1].value);
+            var newval = $("#teamNames option")[event.keyCode-48-1].value;
+            $('#teamNames').val(newval);
+            // ha kiválasztanak valamit, akkor a filter értékét frissítjük vele
+            $("#filter").val(newval);
+            var team = searchExactTeam(newval);
+            $("#problem").val(team.guessNext());
+
         } else if (event.keyCode == 13) {
-            // nem megy fel a body-ba a keres
+            // nem megy fel a body-ba a kérés
             event.stopPropagation();
             $("#radio_0").focus();
             // Call event.preventDefault() to not process the event
@@ -409,7 +451,7 @@ $(document).ready(function(){
         if (event.keyCode == 13) {
             // nem megy fel a body-ba a keres
             event.stopPropagation();
-            $(this).click();
+            dataOK();
             clearData();
             // Call event.preventDefault() to not process the event
             event.preventDefault();
@@ -462,7 +504,7 @@ $(document).ready(function(){
     <!-- kiszűri azokat a csapatokat, amiknek nincs a nevében az adott szöveg -->
     <input type="text" id="filter" class="form-control" placeholder="Csapat keresése"><br>
     <!-- Itt jelennek meg a megszűrt nevek -->
-    <select id="teamNames" size="12" tabindex='-1' class="form-control">
+    <select id="teamNames" size="10" tabindex='-1' class="form-control">
     </select><br>
 
     <!-- azert adok id-t, hogy atadjam a fokuszt a selectbol szukseg eseten -->
@@ -477,12 +519,13 @@ $(document).ready(function(){
     <div class="form-check container-fluid">
         <div class="row">
             <div class="col">
-                <input type="radio" id="radio_0" class="form-check-input" name="choice" value="none"> [0]: Passz<br>
-            </div>
-            <div class="col">
-                <input type="radio" name="choice" class="form-check-input" value="first"> [1]: 1. Próba<br>
+                <input type="radio" id="radio_0" name="choice" class="form-check-input" value="first"> [1]: 1. Próba<br>
                 <input type="radio" name="choice" class="form-check-input" value="second"> [2]: 2. Próba<br>
                 <input type="radio" name="choice" class="form-check-input" value="third"> [3]: 3. Próba<br>
+            </div>
+            <div class="col">
+                <!--<input type="radio" class="form-check-input" name="choice" value="none"> [0]: Üres<br> -->
+                <input type="radio" name="choice" class="form-check-input" value="pass"> [4]: Passz<br>
   </div>
 </div>
 </div>
@@ -502,7 +545,7 @@ $(document).ready(function(){
   </div>
 </div>
 </div>
-
+</div>
 </form>
 
 <script>
