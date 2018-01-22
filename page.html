@@ -72,7 +72,7 @@ function createProblem() {
 //_____________________________________________________SET NUM_PROBLEMS ACCORDING TO THE CURRENT SITUATION (also see features)
 function createTeam(name, id=null, num_problems=16) {
 
-    team = new Object();
+    var team = new Object();
     var problems = [null]; // 0. feladatot nullal feltöltöm
     for (var i = 1; i <= num_problems; i++)
         problems.push(createProblem());
@@ -90,7 +90,7 @@ function createTeam(name, id=null, num_problems=16) {
         if (i < 1 || i > num_problems)
             console.log('ERROR!');
         return this.problems[i];
-    }
+    };
     // returns the index of the problem next to the last solved one
     team.guessNext = function() {
         for (var i=1; i<=num_problems; i++) {
@@ -100,14 +100,23 @@ function createTeam(name, id=null, num_problems=16) {
         }
         return num_problems;
     };
-    team.guessLast = function(){    //-Tomi
-      for (var i=num_problems; i>=0; i++) {
-          if(this.problems[i].status!='none') { // ha megtaláltuk a legelsőt hátulról
-              return i;//akkor visszaadjuk azt
-          }
-      }
-      return 0;
-    }
+    team.guessLast = function(){
+        for (var i=num_problems-1; i>=0; i--) {
+            if(this.problems[i].status!='none') {
+                // ha megtaláltuk a legelsőt hátulról
+                return i+1;//akkor visszaadjuk azt
+            }
+        }
+        return 0;
+    };
+    team.guess = function() {
+        option = $('#guessfunction').val();
+        if (option == 'first') {
+            return this.guessNext();
+        } else {
+            return this.guessLast();
+        }
+    };
     return team;
 }
 
@@ -537,12 +546,22 @@ $(document).ready(function(){
         <div class="row">
             <div class="col">
                 <!--<input type="radio" class="form-check-input" name="choice" value="none"> [0]: Üres<br> -->
-                <input type="radio" name="choice" class="form-check-input" value="pass"> [4]: Passz<br>
+                <label for="choice4">
+                  <input id="choice4" type="radio" name="choice" class="form-check-input" value="pass"> [4]: Passz
+                </label>
   </div>
             <div class="col">
-                <input type="radio" id="radio_0" name="choice" class="form-check-input" value="first"> [1]: 1. Próba<br>
-                <input type="radio" name="choice" class="form-check-input" value="second"> [2]: 2. Próba<br>
-                <input type="radio" name="choice" class="form-check-input" value="third"> [3]: 3. Próba<br>
+                <label for="radio_0">
+                  <input id="radio_0" type="radio" name="choice" class="form-check-input" value="first"> [1]: 1. Próba
+                </label>
+                <br>
+                <label for="choice2">
+                  <input id="choice2" type="radio" name="choice" class="form-check-input" value="second"> [2]: 2. Próba
+                </label>
+                <br>
+                <label for="choice3">
+                  <input id="choice3" type="radio" name="choice" class="form-check-input" value="third"> [3]: 3. Próba
+                </label>
             </div>
 </div>
 </div>
@@ -555,6 +574,20 @@ $(document).ready(function(){
   </div>
 
 
+</div>
+<div class="col">
+    <!-- Valami jobb class kéne, azt hiszem -->
+    <label class="btn btn-warning">
+      Guess functions:
+      <label for="guessfirst">
+        <input id="guessfirst" type="radio" name='guessfunction' value='first' checked autocomplete="off"> first non-filled
+      </label>
+      <br>
+      <label for="guesslast">
+        <input id="guesslast" type="radio" name='guessfunction' value='last' autocomplete="off"> the one after last filled
+      </label>
+      <br>
+    </label>
 </div>
 <div class="col">
   <div class="container-fluid float-right falltrough">
