@@ -110,7 +110,7 @@ function createTeam(name, id=null, num_problems=16) {
         return 0;
     };
     team.guess = function() {
-        option = $('#guessfunction').val();
+        option = $('input[name="guessfunction"]:checked').val();
         if (option == 'first') {
             return this.guessNext();
         } else {
@@ -404,7 +404,7 @@ $(document).ready(function(){
         var val = $('#teamNames').val();
         $("#filter").val(val);
         var team = searchExactTeam(val);
-        $("#problem").val(team.guessNext());
+        $("#problem").val(team.guess());
         //updateOptions();
 
         event.preventDefault();
@@ -435,7 +435,7 @@ $(document).ready(function(){
             // ha kiválasztanak valamit, akkor a filter értékét frissítjük vele
             $("#filter").val(newval);
             var team = searchExactTeam(newval);
-            $("#problem").val(team.guessNext());
+            $("#problem").val(team.guess());
 
         } else if (event.keyCode == 13) {
             // nem megy fel a body-ba a kérés
