@@ -277,22 +277,22 @@ function updateOptions() {
       substr = $("#filter").val();
   }
   var filtered = smartSearchTeam(substr);
-    var length = filtered.length;
-    if (_superFill && length > 0) $("#filter").val(filtered[0].teamname); //-Tomi
-    clearOptions();
-    for (var i = 0; i < length; i++)
-        addOption((i+1) + ': ' + filtered[i].teamname + ' (' + filtered[i].getScore(15, base_scores) + ')', filtered[i].teamname);
-    // ha ki tudjuk ujra valasztani azt, ami a frissites elott volt
-    if ($("#teamNames option[value='"+
-      $.escapeSelector(selected)+"']").length) {
-        $('#teamNames').val(selected);
+  var length = filtered.length;
+  if (_superFill && length > 0) $("#filter").val(filtered[0].teamname); //-Tomi
+  clearOptions();
+  for (var i = 0; i < length; i++)
+      addOption((i+1) + ': ' + filtered[i].teamname + ' (' + filtered[i].getScore(15, base_scores) + ')', filtered[i].teamname);
+  // ha ki tudjuk ujra valasztani azt, ami a frissites elott volt
+  if ($("#teamNames option[value='"+
+    $.escapeSelector(selected)+"']").length) {
+      $('#teamNames').val(selected);
 } else {
-        // egyebkent az elsot, ha van, kivalasztjuk
-        firstOption = $("#teamNames option:first");
-        if (firstOption.length) {
-            $("#teamNames").val(firstOption.val());
-        }
-    }
+      // egyebkent az elsot, ha van, kivalasztjuk
+      firstOption = $("#teamNames option:first");
+      if (firstOption.length) {
+          $("#teamNames").val(firstOption.val());
+      }
+  }
 }
 
 function uncheckRadio() {
@@ -339,6 +339,14 @@ function getChoice(problemNumber,problemScore,base_score)
   }
 }
 
+// kell-e a következő mezőre menni, ha ez a keydown/keypress event jön
+function isKeyNext(event, leftKey=false) {
+  if (leftKey)
+    return ([13,9,40].indexOf(event.keyCode)) >= 0;
+  else
+    return ([13,9].indexOf(event.keyCode)) >= 0;
+}
+
 // globális változók
 // base_scores: null az elejen, mert egytol indexeltem. TODO atirjam? // perhaps -Tomi // mostmar jo ez igy -Laci
 var _asycnron = false;
@@ -368,6 +376,8 @@ $(document).ready(function(){
 
     $("#filter").on('input', function(event) {
         updateOptions();
+        var team = searchExactTeam($('#teamNames').val());
+        $("#problem").val(team.guess());
     });
     $("#filter").on('keypress', function(event) {
         if(_superFill) {
@@ -412,13 +422,14 @@ $(document).ready(function(){
     // enterre (meg tabra, de az built-in) tovabbmegy a kovetkezo elemre
     $("#filter").get()[0].addEventListener('keydown', function (event) {
         if (_superFill &&
-            (event.keyCode == 13 || event.keyCode == 9)) {
+            isKeyNext(event, true)) {
             // enter or tab
             event.stopPropagation();
-            $("#radio_0").focus();
+            $("#problem").focus();
+            $("#problem").select();
             // Call event.preventDefault() to not process the event
             event.preventDefault();
-        } else if (event.keyCode == 13 || event.keyCode == 9    ) {
+        } else if (isKeyNext(event, true)) {
             event.stopPropagation();
             $("#teamNames").focus();
             // Call event.preventDefault() to not process the event
@@ -437,10 +448,13 @@ $(document).ready(function(){
             var team = searchExactTeam(newval);
             $("#problem").val(team.guess());
 
-        } else if (event.keyCode == 13) {
+        } else if (isKeyNext(event)) {
             // nem megy fel a body-ba a kérés
             event.stopPropagation();
-            $("#radio_0").focus();
+            $("#problem").focus();
+            $("#problem").select();
+            var team = searchExactTeam($('#teamNames').val());
+            $("#problem").val(team.guess());
             // Call event.preventDefault() to not process the event
             event.preventDefault();
         }
@@ -453,28 +467,27 @@ $(document).ready(function(){
         if (event.keyCode >= 48 && event.keyCode < 58) { // ha szam
             uncheckRadio();
             checkRadio(event.keyCode-48); // keycode-48 lesz a szam
-        } if (event.keyCode == 13) {
+        } if (isKeyNext(event)) {
             // nem megy fel a body-ba az event
             event.stopPropagation();
-            $("#problem").focus();
-            $("#problem").select();
+            $("#ok").focus();
             // Call event.preventDefault() to not process the event
             event.preventDefault();
         }
     })});
     // enter, tab tovabbmegy (lasd fentebb)
     $("#problem").get()[0].addEventListener('keydown', function(event) {
-        if (event.keyCode == 13) {
+        if (isKeyNext(event)) {
             // nem megy fel a body-ba a keres
             event.stopPropagation();
-            $("#ok").focus();
+            $("#radio_0").focus();
             // Call event.preventDefault() to not process the event
             event.preventDefault();
         }
     });
     // enter veglegesiti es atadja a fokusznak a tetejet
     $("#ok").get()[0].addEventListener('keydown', function(event) {
-        if (event.keyCode == 13) {
+        if (isKeyNext(event)) {
             // nem megy fel a body-ba a keres
             event.stopPropagation();
             dataOK();
@@ -485,7 +498,7 @@ $(document).ready(function(){
     });
     // onclick veglegesiti es atadja a fokusznak a tetejet
     $("#ok").get()[0].addEventListener('onclick', function(event) {
-        if (event.keyCode == 13) {
+        if (isKeyNext(event)) {
             // nem megy fel a body-ba a keres
             event.stopPropagation();
             $(this).click();
