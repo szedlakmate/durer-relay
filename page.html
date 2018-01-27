@@ -19,11 +19,19 @@
     </style>
 
     <script>
+
+function isint(i) {
+  // https://stackoverflow.com/a/14636652
+  // return i === parseInt(i, 10);
+  return (typeof i) === "number";
+}
 // Problem objektum készítése
 function createProblem() {
     var problem = new Object();
     problem.status = 'none'; // none, first, second, third
     problem.getScore = function(base_score) {
+        if (!isint(base_score))
+            console.log('ERROR! problem.getScore: base_score should be a number:',base_score);
         switch (this.status) {
             case 'none': return 0;
             case 'first': return base_score;
@@ -33,10 +41,12 @@ function createProblem() {
             default:
             console.log('Invalid problem state/n Fired by .getScore()');
                 // itt kéne egy rohadtnagy error
-            }
+        }
     };
     // get score for pretty output (differentiates "none" and "pass")
     problem.getPretty = function(base_score) {
+        if (!isint(base_score))
+            console.log('ERROR! problem.getPretty: base_score should be a number:', base_score);
         switch (this.status) {
             case 'none': return '';
             case 'first': return base_score;
@@ -46,7 +56,7 @@ function createProblem() {
             default:
             console.log('Invalid problem state /n Fired by .getPretty');
                 // itt kéne egy rohadtnagy error
-            }
+        }
     };
     problem.setStatus = function(new_status) {
         switch (this.status) {
@@ -70,38 +80,60 @@ function createProblem() {
 // id: csapatid
 //num_ptoblems : feladatok száma
 //_____________________________________________________SET NUM_PROBLEMS ACCORDING TO THE CURRENT SITUATION (also see features)
-function createTeam(name, id=null, num_problems=16) {
-
+function createTeam(name, base_scores, id = null) {
+    if (typeof(name) !== "string")
+        console.log('ERROR! createTeam: name should be string:', name);
+    if (!isint(base_scores[1]))
+        console.log('ERROR! createTeam: base_scores should be an array of numbers:', base_scores);
+    
     var team = new Object();
     var problems = [null]; // 0. feladatot nullal feltöltöm
+    var num_problems = base_scores.length-1; // 1-tol szamozunk!
     for (var i = 1; i <= num_problems; i++)
         problems.push(createProblem());
     team.problems = problems;
     team.teamname = name; // !! nem name, mert azt használhatják kívülről
     team.num_problems = num_problems;
     team.id = id;
-    team.getScore = function(num_problems, base_scores) {
-        var sum = 0;
-        for (var i = 1; i <= num_problems; i++)
-            sum += this.problems[i].getScore(base_scores[i]);
-        return sum;
+    team.base_scores = base_scores;
+    team.getProblemScore = function(i) {
+        if (!isint(i))
+            console.log('ERROR! team.getProblemScore: param should be number:',i);
+        if (i < 1 || i > this.num_problems)
+            console.log('ERROR! team.getProblemScore: param is out of bounds:',i);
+        return this.problems[i].getScore(this.base_scores[i]);
     };
-    team.getProblem = function(i) {
-        if (i < 1 || i > num_problems)
-            console.log('ERROR!');
-        return this.problems[i];
+    team.getProblemPrettyScore = function(i) {
+        if (!isint(i))
+            console.log('ERROR! team.getProblemPrettyScore: param should be number:',i);
+        if (i < 1 || i > this.num_problems)
+            console.log('ERROR! team.getProblemPrettyScore: param is out of bounds:',i);
+        return this.problems[i].getPretty(this.base_scores[i]);
+    };
+    team.setProblemStatus = function(i, new_status) {
+        if (!isint(i))
+            console.log('ERROR! team.setProblemStatus: param should be number:',i);
+        if (i < 1 || i > this.num_problems)
+            console.log('ERROR! team.setProblemStatus: param is out of bounds:',i);
+        this.problems[i].setStatus(new_status);
+    }
+    team.getScoreSum = function() {
+        var sum = 0;
+        for (var i = 1; i <= this.num_problems; i++)
+            sum += this.getProblemScore(i);
+        return sum;
     };
     // returns the index of the problem next to the last solved one
     team.guessNext = function() {
-        for (var i=1; i<=num_problems; i++) {
+        for (var i=1; i <= this.num_problems; i++) {
             if(this.problems[i].status=='none') { // ha megtaláltuk a legutolsót
                 return i;//akkor visszaadjuk a következőt
             }
         }
-        return num_problems;
+        return this.num_problems;
     };
     team.guessLast = function(){
-        for (var i=num_problems-1; i>=0; i--) {
+        for (var i=this.num_problems-1; i>=0; i--) {
             if(this.problems[i].status!='none') {
                 // ha megtaláltuk a legelsőt hátulról
                 return i+1;//akkor visszaadjuk azt
@@ -111,7 +143,7 @@ function createTeam(name, id=null, num_problems=16) {
     };
     team.guess = function() {
         option = $('input[name="guessfunction"]:checked').val();
-        if (option == 'first') {
+        if (option === 'first') {
             return this.guessNext();
         } else {
             return this.guessLast();
@@ -120,21 +152,21 @@ function createTeam(name, id=null, num_problems=16) {
     return team;
 }
 
-// egyszerű teszt Team-re és Problem-re: createTeam, getProblem, problem.setStatus, getScore
+// egyszerű teszt Team-re
 function testTeam() {
-    var team = createTeam("Szprájt");
-    team.getProblem(1).setStatus('first');
-    team.getProblem(11).setStatus('second');
-    team.getProblem(15).setStatus('pass');
+    var team = createTeam("Szprájt", [null, 3,3,3,3,3,4,4,4,4,4,5,5,5,5,5]); // 15
+    team.setProblemStatus(1,'first');
+    team.setProblemStatus(11,'second');
+    team.setProblemStatus(15,'pass');
 
-    console.log("Test#1: ",
-        team.getScore(15, [null, 3,3,3,3,3,4,4,4,4,4,5,5,5,5,5])
-        );
+    console.log("Test#1: ", team.getScoreSum());
 }
 
 // kereséshez segédfüggvény:
 // kiveszi az ékezeteket, szóközöket és case insensitive-vé teszi
 function mystrip(r, strip_accents=true, strip_spaces=true) {
+    if (typeof(r) !== "string")
+        console.log('ERROR! mystrip: param should be string:',r);
     var r=r.toLowerCase();
     if (strip_spaces)
         r = r.replace(new RegExp(/\s/g),"");
@@ -150,6 +182,8 @@ function mystrip(r, strip_accents=true, strip_spaces=true) {
 
 // substring-et keres, nem csak a csapatnév elején
 function smartSearchTeam(substr) {
+    if (typeof(substr) !== "string")
+        console.log('ERROR! smartSearchTeam: substr should be string:',substr);
     substr = mystrip(substr);
     var num_teams = teams.length;
     var candidates = [];
@@ -164,6 +198,8 @@ function smartSearchTeam(substr) {
 
 // substring-et keres, de csak a csapatnév elején, valszeg nem fog kelleni
 function searchTeam(substr) {
+    if (typeof(substr) !== "string")
+        console.log('ERROR! searchTeam: substr should be string:',substr);
     substr = mystrip(substr);
     var num_teams = teams.length;
     var candidates = [];
@@ -177,11 +213,13 @@ function searchTeam(substr) {
 }
 
 // teljes matchelest keres, azonositashoz
-function searchExactTeam(str) {
+function searchExactTeam(substr) {
+    if (typeof(substr) !== "string")
+        console.log('ERROR! searchExactTeam: substr should be string:',substr);
     var num_teams = teams.length;
     for (var i = 0; i < num_teams; i++) {
         var team = teams[i];
-        if (team.teamname == str)
+        if (team.teamname == substr)
             return team;
     }
 }
@@ -204,11 +242,12 @@ google.script.run.withSuccessHandler(function(data){
         var tmpTeam = new Object();
         for(i=0;i<data.length;i++)
           {
-            tmpTeam = createTeam(data[i][0]);
+            // TODO select which base_scores
+            tmpTeam = createTeam(data[i][0], base_scores_0);
             for(j=1;j<=tmpTeam.num_problems;j++)
               {
                 // Changed, to test
-                tmpTeam.getProblem(j).setStatus(getChoice(j,data[i][j],base_scores));
+                tmpTeam.setProblemStatus(j, getChoice(j,data[i][j], base_scores_0));
               }
             teams.push(tmpTeam);
           }
@@ -229,8 +268,8 @@ function dataOK() {
     var problem = parseInt($("#problem").val());
     // validalas
     var team = searchExactTeam(teamname);
-    team.getProblem(problem).setStatus(choice);
-    var score=team.getProblem(problem).getPretty(base_scores[problem]);
+    team.setProblemStatus(problem, choice);
+    var score=team.getProblemPrettyScore(problem);
     console.log("Sendt've:"+score);
     console.log({"teamname":teamname,"choice":choice,"problem":problem,
     "score":score,"sheetName":sheetName,"userName":userName});
@@ -281,7 +320,7 @@ function updateOptions() {
   if (_superFill && length > 0) $("#filter").val(filtered[0].teamname); //-Tomi
   clearOptions();
   for (var i = 0; i < length; i++)
-      addOption((i+1) + ': ' + filtered[i].teamname + ' (' + filtered[i].getScore(15, base_scores) + ')', filtered[i].teamname);
+      addOption((i+1) + ': ' + filtered[i].teamname + ' (' + filtered[i].getScoreSum() + ')', filtered[i].teamname);
   // ha ki tudjuk ujra valasztani azt, ami a frissites elott volt
   if ($("#teamNames option[value='"+
     $.escapeSelector(selected)+"']").length) {
@@ -348,10 +387,11 @@ function isKeyNext(event, leftKey=false) {
 }
 
 // globális változók
-// base_scores: null az elejen, mert egytol indexeltem. TODO atirjam? // perhaps -Tomi // mostmar jo ez igy -Laci
+// base_scores: null az elejen, mert egytol indexeltem.
 var _asycnron = false;
 var filter_search_word =""; // -Tomi
-var base_scores = [null,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6];
+// renamed to test if anyone is using this
+var base_scores_0 = [null,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6];
 var teams=[];
 var sheetName = "";
 var userName = "";
@@ -365,14 +405,6 @@ $(document).ready(function(){
     loadTeams();
 
     //testTeam();
-    // teszt, törölj ki
-    /*k
-    teams.push(createTeam("Hello"));
-    teams.push(createTeam("Darkness"));
-    teams.push(createTeam("My"));
-    teams.push(createTeam("Old"));
-    teams.push(createTeam("Friend"));
-    */
 
     $("#filter").on('input', function(event) {
         updateOptions();
