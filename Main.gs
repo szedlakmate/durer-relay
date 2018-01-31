@@ -110,6 +110,16 @@ function getDataExtended(sheetName,user)
   }
   //első adat indexe
   var firstDataIndex = 2;
+  //get y size
+  var yMaxLength =0;
+  var lastColumn = sheet.getRange(1,firstDataIndex);
+  while(lastColumn.getValue()!=""){
+    if(yMaxLength>100)break;
+    yMaxLength++;
+    lastColumn = sheet.getRange(1,firstDataIndex+yMaxLength);
+  }
+  Logger.log(yMaxLength); 
+  //get raw data
   tmp = sheet.getRange(2,firstDataIndex,irng-3,firstDataIndex+23).getValues();
   Logger.log(tmp.length);
   for(i=0;i<tmp.length;i++)
