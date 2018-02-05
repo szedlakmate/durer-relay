@@ -646,27 +646,19 @@
                     </label>
                 </div>
             </label>
-
-            <label class="col">
-                Guess functions:
-            </label>
-
-            <label class="col">
                 <!-- Valami jobb class kéne, azt hiszem -->
-                <label for="guessfirst">
+                <label for="guessfirst" class="col">
                     <input id="guessfirst" type="radio" name='guessfunction' value='first' checked autocomplete="off"> első üres
                 </label>
                 <br>
-                <label for="guesslast">
+                <label for="guesslast" class="col">
                     <input id="guesslast" type="radio" name='guessfunction' value='last' autocomplete="off"> köv. üres
                 </label>
                 <br>
-            </label>
-        </div>
-
-        <div class="container-fluid float-right falltrough">
+   
+		<label for="ok" class="col">
             <input type="button" id="ok" class="btn btn-success form-group float-right" onclick="dataOK()" value="Oké" >
-        </div>
+       </label>
     </div>
 </form>
 
