@@ -57,7 +57,7 @@ function setValue(y,x,val,sheetName){
 function setTeamPoints(teamName,problemNumber,problemPoint,sheetName,user)
 {
   var logs = "";
-  var offset = 0;
+  var offset = 1;
   var y = getTeamY(teamName,sheetName);
   logs += y;
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
@@ -118,7 +118,7 @@ function getDataExtended(sheetName,user)
     yMaxLength++;
     lastColumn = sheet.getRange(1,firstDataIndex+yMaxLength);
   }
-  Logger.log(yMaxLength); 
+  Logger.log(yMaxLength);
   //get raw data
   tmp = sheet.getRange(2,firstDataIndex,irng-3,firstDataIndex+23).getValues();
   Logger.log(tmp.length);

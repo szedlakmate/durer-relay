@@ -85,7 +85,7 @@ function createTeam(name, base_scores, id = null) {
         console.log('ERROR! createTeam: name should be string:', name);
     if (!isint(base_scores[1]))
         console.log('ERROR! createTeam: base_scores should be an array of numbers:', base_scores);
-    
+
     var team = new Object();
     var problems = [null]; // 0. feladatot nullal feltöltöm
     var num_problems = base_scores.length-1; // 1-tol szamozunk!
@@ -226,6 +226,7 @@ function searchExactTeam(substr) {
 
 function loadTeams() {
     teams = []; // ne írj var-t!
+    //testTeam();
 //teams = ...;
 //BACKEND communication
 console.log("Start loading:");
@@ -243,11 +244,23 @@ google.script.run.withSuccessHandler(function(data){
         for(i=0;i<data.length;i++)
           {
             // TODO select which base_scores
-            tmpTeam = createTeam(data[i][0], base_scores_0);
+            //test functions
+            //if(data[i][1]==="C"||data[i][1]==="c")console.log(data[i][0]+" is C");
+            //console.log(basescoresCategories[basescoreNames.indexOf(data[i][1])]);
+            let teamBaseScore = basescoresCategories[basescoreNames.indexOf(data[i][1])];
+            tmpTeam = createTeam(data[i][0], teamBaseScore);
             for(j=1;j<=tmpTeam.num_problems;j++)
               {
+                //See if has default value
+                if(teamBaseScore[j]==0)
+                {
+                    tmpTeam.setProblemStatus(j,"pass");
+                }
                 // Changed, to test
-                tmpTeam.setProblemStatus(j, getChoice(j,data[i][j], base_scores_0));
+                else
+                {
+                    tmpTeam.setProblemStatus(j, getChoice(j,data[i][j+1],teamBaseScore));
+                }
               }
             teams.push(tmpTeam);
           }
@@ -259,7 +272,6 @@ google.script.run.withSuccessHandler(function(data){
         $("#filter").val("");
     }).getDataExtended(sheetName,userName);
 }).settings();
-$("#filter").val("Loading");
 }
 
 function dataOK() {
@@ -270,6 +282,12 @@ function dataOK() {
     var team = searchExactTeam(teamname);
     team.setProblemStatus(problem, choice);
     var score=team.getProblemPrettyScore(problem);
+    if(team.base_scores[problem]==0)
+    {
+      //TODO üzenet invalid bevitelre
+      console.log("Invalid input, "+team.name+" shouldn't have "+problem+". problem\ndataOK() stopped right now");
+      return;
+    }
     console.log("Sendt've:"+score);
     console.log({"teamname":teamname,"choice":choice,"problem":problem,
     "score":score,"sheetName":sheetName,"userName":userName});
@@ -392,6 +410,14 @@ var _asycnron = false;
 var filter_search_word =""; // -Tomi
 // renamed to test if anyone is using this
 var base_scores_0 = [null,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6];
+var basescoresCategories = [
+[null,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6,0,0,0,0],
+[null,0,0,0,0,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6],
+[null,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6,0,0,0,0],
+[null,0,0,0,0,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6],
+[null,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+];
+var basescoreNames = ["C","C+","D","D+"];
 var teams=[];
 var sheetName = "";
 var userName = "";
@@ -401,6 +427,7 @@ global_teams = teams;
 // event callbacks
 $(document).ready(function(){
     addOption("loading","null");
+    $("#filter").val("Loading");
     console.log('Loaded');
     loadTeams();
 
