@@ -350,6 +350,9 @@
                     $("#teamNames").val(firstOption.val());
                 }
             }
+
+            var team = searchExactTeam($('#teamNames').val());
+            $("#problem").val(team.guess());
         }
 
         function uncheckRadio() {
@@ -391,8 +394,7 @@
                     return 'third';
                     break;
                 default:
-                    return 'none'
-
+                    return 'none';
             }
         }
 
@@ -409,7 +411,6 @@
         var _asycnron = false;
         var filter_search_word =""; // -Tomi
         // renamed to test if anyone is using this
-        var base_scores_0 = [null,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6];
         var basescoresCategories = [
             [null,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6,0,0,0,0],
             [null,0,0,0,0,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6],
@@ -435,8 +436,6 @@
 
             $("#filter").on('input', function(event) {
                 updateOptions();
-                var team = searchExactTeam($('#teamNames').val());
-                $("#problem").val(team.guess());
             });
             $("#filter").on('keypress', function(event) {
                 if(_superFill) {
