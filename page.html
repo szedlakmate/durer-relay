@@ -423,7 +423,6 @@
         var sheetName = "";
         var userName = "";
         //option variables
-        // unused now, always false
         var _superFill=false; //épp nem működik, és elvi hibát tartalmaz
         global_teams = teams;
         // event callbacks
@@ -580,8 +579,14 @@
                 };
             });
             // settings
-            $("#refresh").click(function() {
-                loadTeams();
+            $("#superfill").click(function() {
+                _superFill ^= 1;
+                console.log("superfill now " +
+                    (_superFill ? "on" : "off"));
+                if (_superFill) {
+                    $("#teamNames").hide();
+                } else
+                    $("#teamNames").show();
             });
         });
     </script>
@@ -639,8 +644,8 @@
         <div class="row">
             <label class="col">
                 <div id="settings" class="form-check-input container-fluid falltrough" data-toggle="buttons">
-                    <label class="btn btn-warning" id="refresh">
-                         Frissítés
+                    <label class="btn btn-warning" id="superfill">
+                        <input type="checkbox"  checked autocomplete="off"> superfill
                     </label>
                 </div>
             </label>
