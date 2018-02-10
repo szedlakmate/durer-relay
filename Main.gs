@@ -27,7 +27,7 @@ function durerGUI()
      var html = HtmlService.createHtmlOutputFromFile('Page.html')
       .setWidth(450)
       .setHeight(550);
- SpreadsheetApp.getUi().showModalDialog(html, 'Adatok bevitele:  '+Session.getActiveUser());
+ SpreadsheetApp.getUi().showModalDialog(html, 'Adatok bevitele:  '+Session.getActiveUser();
 };
 
 //durerGUI BACKEND communication settings

@@ -126,7 +126,7 @@
             // returns the index of the problem next to the last solved one
             team.guessNext = function() {
                 for (var i=1; i <= this.num_problems; i++) {
-                    if(this.problems[i].status=='none') { // ha megtaláltuk a legutolsót
+                    if(this.problems[i].status=='none' && this.base_scores[i]!=0) { // ha megtaláltuk a legutolsót
                         return i;//akkor visszaadjuk a következőt
                     }
                 }
