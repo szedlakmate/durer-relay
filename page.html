@@ -254,7 +254,7 @@
                             //See if has default value
                             if(teamBaseScore[j]==0)
                             {
-                                tmpTeam.setProblemStatus(j,"pass");
+                                tmpTeam.setProblemStatus(j,"none");
                             }
                             // Changed, to test
                             else
@@ -308,6 +308,15 @@
             clearData();
             //_superFill
             filter_search_word="";
+        }
+
+        // loops the loadTeams() fg automaticli after starting
+        function teamLoadLoop()
+        {
+          console.log("Auto sync started");
+          $("#filter").val("Auto sync...");
+          loadTeams();
+          setTimeout(teamLoadLoop(),60000);
         }
 
         // clears all DOM options in DOM select
@@ -456,7 +465,7 @@
             });
             updateOptions();
             clearData();
-
+            //setInterval(loadTeams(),60000);
             // hot-keyek
             // ha barhol escape-t nyomnak, akkor torli az adatokat
             $("#main").on('keydown', function() {
@@ -582,6 +591,7 @@
             });
             // settings
             $("#refresh").click(function() {
+                $("#filter").val("Loading...");
                 loadTeams();
             });
         });
@@ -595,7 +605,7 @@
         <!-- Html part -->
 
         <!-- kiszűri azokat a csapatokat, amiknek nincs a nevében az adott szöveg -->
-        <input type="text" id="filter" class="form-control" placeholder="Csapat keresése"><br>
+        <input type="text" id="filter" value="Loading..." class="form-control" placeholder="Csapat keresése"><br>
         <!-- Itt jelennek meg a megszűrt nevek -->
         <select id="teamNames" size="10" tabindex='-1' class="form-control">
         </select><br>
@@ -633,18 +643,19 @@
             </div>
         </div>
         <div class="row">
+          <label class="col">
+              <div id="settings" class="form-check-input container-fluid falltrough" data-toggle="buttons">
+                  <label class="btn btn-primary" id="refresh">
+                       Frissítés
+                  </label>
+              </div>
+          </label>
           <label for="ok" class="col">
                   <input type="button" id="ok" class="btn btn-success form-group float-right" onclick="dataOK()" value="Oké" >
           </label>
         </div>
         <div class="row">
-            <label class="col">
-                <div id="settings" class="form-check-input container-fluid falltrough" data-toggle="buttons">
-                    <label class="btn btn-warning" id="refresh">
-                         Frissítés
-                    </label>
-                </div>
-            </label>
+
                 <!-- Valami jobb class kéne, azt hiszem -->
                 <label for="guessfirst" class="col">
                     <input id="guessfirst" type="radio" name='guessfunction' value='first' checked autocomplete="off"> első üres
