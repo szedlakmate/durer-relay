@@ -4,7 +4,7 @@ var sheetName = "";
 //onload fnction creates menu
 function onOpen() {
    SpreadsheetApp.getUi()
-       .createMenu('Dürer Menu')
+       .createMenu('Dürer Menü')
        .addItem('Bevitel indít','durerGUI')
        .addSeparator()
        .addSubMenu(SpreadsheetApp.getUi().createMenu('Beállítások')
@@ -25,9 +25,9 @@ function GBS()
 function durerGUI()
 {
      var html = HtmlService.createHtmlOutputFromFile('Page.html')
-      .setWidth(500)
-      .setHeight(600);
- SpreadsheetApp.getUi().showModalDialog(html, 'Adding data');
+      .setWidth(450)
+      .setHeight(550);
+ SpreadsheetApp.getUi().showModalDialog(html, 'Adatok bevitele:  '+Session.getActiveUser();
 };
 
 //durerGUI BACKEND communication settings
@@ -37,7 +37,8 @@ function settings(id) {
   var sheet_name= SpreadsheetApp.getActiveSheet().getName();
     var email = Session.getActiveUser().getEmail();
   } catch (e) {
-    email="Fuck you google";
+    var email="Hey";
+    var sheet_name="";
   }
   //Logger.log(ss);
   return [sheet_name,email];
@@ -55,12 +56,15 @@ function setValue(y,x,val,sheetName){
 
 function setTeamPoints(teamName,problemNumber,problemPoint,sheetName,user)
 {
-  var offset = 6;
+  var logs = "";
+  var offset = 1;
   var y = getTeamY(teamName,sheetName);
+  logs += y;
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  //sheet.getRange(y+2,problemNumber+1+offset).setBackground("green");
+  //sheet.getRange(y+2,problemNumber+1+offset).setBackground("red");
   sheet.getRange(y+2,problemNumber+1+offset).setValue(problemPoint);
   //TODO loggolás!!!
+  //return logs;
   return true;
 }
 
@@ -105,13 +109,23 @@ function getDataExtended(sheetName,user)
     datas[i].push(tmp[i][0]);
   }
   //első adat indexe
-  var firstDataIndex = 8;
-  tmp = sheet.getRange(2,firstDataIndex,irng-3,firstDataIndex+15).getValues();
-
+  var firstDataIndex = 2;
+  //get y size
+  var yMaxLength =0;
+  var lastColumn = sheet.getRange(1,firstDataIndex);
+  while(lastColumn.getValue()!=""){
+    if(yMaxLength>100)break;
+    yMaxLength++;
+    lastColumn = sheet.getRange(1,firstDataIndex+yMaxLength);
+  }
+  Logger.log(yMaxLength);
+  //get raw data
+  tmp = sheet.getRange(2,firstDataIndex,irng-3,firstDataIndex+23).getValues();
+  Logger.log(tmp.length);
   for(i=0;i<tmp.length;i++)
   {
     var j;
-    for(j=0;j<tmp.length;j++)
+    for(j=0;j<tmp[i].length;j++)
     {
         datas[i][j+1]=tmp[i][j];
     }
